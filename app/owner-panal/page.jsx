@@ -2,14 +2,29 @@
 
 import { useEffect, useState } from "react";
 import AuthGuard from "@/components/AuthGuard";
+import UsersTab from "@/components/admin/UsersTab";
+import OrdersTab from "@/components/admin/OrdersTab";
+import PricingTab from "@/components/admin/PricingTab";
+import TransactionsTab from "@/components/admin/TransactionsTab";
 
 export default function AdminPanalPage() {
   const [activeTab, setActiveTab] = useState("users");
+
   const [users, setUsers] = useState([]);
   const [orders, setOrders] = useState([]);
+  const [transactions, setTransactions] = useState([]);
   const [balance, setBalance] = useState(null);
-  const [loading, setLoading] = useState(false);
+
   const [updatingUserId, setUpdatingUserId] = useState(null);
+
+  /* ================= PRICING STATE ================= */
+  const [pricingType, setPricingType] = useState("admin");
+  const [slabs, setSlabs] = useState([{ min: 0, max: 100, percent: 0 }]);
+  const [savingPricing, setSavingPricing] = useState(false);
+
+  /* ================= HELPERS ================= */
+  const normalizeSlabs = (list) =>
+    [...list].sort((a, b) => a.min - b.min);
 
   /* ================= FETCH BALANCE ================= */
   const fetchBalance = async () => {
@@ -20,36 +35,38 @@ export default function AdminPanalPage() {
         setBalance(data?.balance?.data?.balance ?? data.balance);
       }
     } catch (err) {
-      console.error("Balance fetch failed");
+      console.error("Balance fetch failed", err);
     }
   };
 
   /* ================= FETCH USERS ================= */
   const fetchUsers = async () => {
-    setLoading(true);
     const token = localStorage.getItem("token");
-
     const res = await fetch("/api/admin/users", {
       headers: { Authorization: `Bearer ${token}` },
     });
-
     const data = await res.json();
     setUsers(data.data || []);
-    setLoading(false);
   };
 
   /* ================= FETCH ORDERS ================= */
   const fetchOrders = async () => {
-    setLoading(true);
     const token = localStorage.getItem("token");
-
     const res = await fetch("/api/admin/orders", {
       headers: { Authorization: `Bearer ${token}` },
     });
-
     const data = await res.json();
     setOrders(data.data || []);
-    setLoading(false);
+  };
+
+  /* ================= FETCH TRANSACTIONS ================= */
+  const fetchTransactions = async () => {
+    const token = localStorage.getItem("token");
+    const res = await fetch("/api/admin/transactions", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const data = await res.json();
+    setTransactions(data.data || []);
   };
 
   /* ================= CHANGE USER ROLE ================= */
@@ -68,18 +85,54 @@ export default function AdminPanalPage() {
       });
 
       const data = await res.json();
-
-      if (!res.ok) {
-        alert(data.message || "Failed to update role");
-        return;
-      }
+      if (!res.ok) alert(data.message || "Failed");
 
       fetchUsers();
-    } catch (err) {
-      console.error(err);
-      alert("Something went wrong");
     } finally {
       setUpdatingUserId(null);
+    }
+  };
+
+  /* ================= FETCH PRICING ================= */
+  const fetchPricing = async (type) => {
+    const token = localStorage.getItem("token");
+
+    const res = await fetch(`/api/admin/pricing?userType=${type}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    const data = await res.json();
+
+    if (data.success && data.data?.slabs) {
+      setSlabs(data.data.slabs);
+    } else {
+      setSlabs([{ min: 0, max: 0, percent: 0 }]);
+    }
+  };
+
+  /* ================= SAVE PRICING ================= */
+  const savePricing = async () => {
+    try {
+      setSavingPricing(true);
+      const token = localStorage.getItem("token");
+
+      const res = await fetch("/api/admin/pricing", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          userType: pricingType,
+          slabs: normalizeSlabs(slabs),
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) alert(data.message || "Failed");
+      else alert("Pricing updated successfully");
+    } finally {
+      setSavingPricing(false);
     }
   };
 
@@ -92,7 +145,9 @@ export default function AdminPanalPage() {
   useEffect(() => {
     if (activeTab === "users") fetchUsers();
     if (activeTab === "orders") fetchOrders();
-  }, [activeTab]);
+    if (activeTab === "transactions") fetchTransactions();
+    if (activeTab === "pricing") fetchPricing(pricingType);
+  }, [activeTab, pricingType]);
 
   return (
     <AuthGuard>
@@ -105,143 +160,77 @@ export default function AdminPanalPage() {
               Admin Panel
             </h1>
             <p className="text-[var(--muted)]">
-              Manage users & orders
+              Manage users, orders, transactions & pricing
             </p>
           </div>
 
           {/* BALANCE */}
-          <div className="mb-6 bg-[var(--card)] border border-[var(--border)] rounded-xl p-5 flex items-center justify-between">
-            <div>
-              <p className="text-sm text-[var(--muted)]">
-                1GameStopUp Account Balance
-              </p>
-              <p className="text-2xl font-bold text-[var(--accent)]">
-                {balance !== null ? `₹${balance}` : "Loading..."}
-              </p>
-            </div>
-
-            <a
-              href="https://1gamestopup.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm font-semibold text-[var(--accent)] hover:underline"
-            >
-              Open Dashboard →
-            </a>
+          <div className="mb-6 bg-[var(--card)] border border-[var(--border)] rounded-xl p-5">
+            <p className="text-sm text-[var(--muted)]">Account Balance</p>
+            <p className="text-2xl font-bold text-[var(--accent)]">
+              {balance !== null ? `₹${balance}` : "Loading..."}
+            </p>
           </div>
 
           {/* TABS */}
-          <div className="flex gap-4 mb-6">
-            {["users", "orders"].map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`px-5 py-2 rounded-xl font-semibold border transition ${
-                  activeTab === tab
-                    ? "bg-[var(--accent)] text-black"
-                    : "bg-[var(--card)] border-[var(--border)] hover:border-[var(--accent)]"
-                }`}
-              >
-                {tab.toUpperCase()}
-              </button>
-            ))}
-          </div>
+   <div
+  className="
+    mb-6
+    grid grid-cols-2 gap-3
+    sm:flex sm:flex-wrap sm:gap-4
+  "
+>
+  {["users", "orders", "transactions", "pricing"].map((tab) => (
+    <button
+      key={tab}
+      onClick={() => setActiveTab(tab)}
+      className={`
+        px-4 py-2
+        rounded-xl font-semibold border text-sm
+        transition
+        ${
+          activeTab === tab
+            ? "bg-[var(--accent)] text-black"
+            : "bg-[var(--card)] border-[var(--border)]"
+        }
+      `}
+    >
+      {tab.toUpperCase()}
+    </button>
+  ))}
+</div>
+
 
           {/* PANEL */}
-          <div className="bg-[var(--card)] border border-[var(--border)] rounded-2xl shadow-lg p-6">
-            {loading && (
-              <p className="text-center text-[var(--muted)]">Loading...</p>
+          <div className="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6">
+
+            {activeTab === "users" && (
+              <UsersTab
+                users={users}
+                updatingUserId={updatingUserId}
+                onChangeRole={changeUserRole}
+              />
             )}
 
-            {/* USERS */}
-            {!loading && activeTab === "users" && (
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b border-[var(--border)]">
-                      <th className="py-3 px-2">SL</th>
-                      <th className="py-3 px-2">Name</th>
-                      <th className="py-3 px-2">Email</th>
-                      <th className="py-3 px-2">Phone</th>
-                      <th className="py-3 px-2">Orders</th>
-                      <th className="py-3 px-2">User Type</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {users.map((u, i) => (
-                      <tr key={u._id} className="border-b border-[var(--border)]">
-                        <td className="py-3 px-2">{i + 1}</td>
-                        <td className="py-3 px-2">{u.name}</td>
-                        <td className="py-3 px-2">{u.email}</td>
-                        <td className="py-3 px-2">{u.phone}</td>
-                        <td className="py-3 px-2">{u.order}</td>
-                        <td className="py-3 px-2">
-                          <div className="flex items-center gap-2">
-                            <select
-                              value={u.userType}
-                              disabled={u.userType === "owner"}
-                              onChange={(e) =>
-                                changeUserRole(u.userId, e.target.value)
-                              }
-                              className="
-                                bg-[var(--background)]
-                                border border-[var(--border)]
-                                rounded-lg px-2 py-1 text-sm capitalize
-                                disabled:opacity-50
-                              "
-                            >
-                              <option value="user">User</option>
-                              <option value="admin">Admin</option>
-                              <option value="owner">Owner</option>
-                            </select>
-
-                            {updatingUserId === u.userId && (
-                              <span className="text-xs text-[var(--muted)]">
-                                Updating...
-                              </span>
-                            )}
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+            {activeTab === "orders" && (
+              <OrdersTab orders={orders} />
             )}
 
-            {/* ORDERS */}
-            {!loading && activeTab === "orders" && (
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b border-[var(--border)]">
-                      <th className="py-3 px-2">Order ID</th>
-                      <th className="py-3 px-2">Game</th>
-                      <th className="py-3 px-2">Item</th>
-                      <th className="py-3 px-2">Player ID</th>
-                      <th className="py-3 px-2">Zone</th>
-                      <th className="py-3 px-2">Payment</th>
-                      <th className="py-3 px-2">Price</th>
-                      <th className="py-3 px-2">Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {orders.map((o) => (
-                      <tr key={o._id} className="border-b border-[var(--border)]">
-                        <td className="py-3 px-2 font-mono text-xs">{o.orderId}</td>
-                        <td className="py-3 px-2">{o.gameSlug}</td>
-                        <td className="py-3 px-2">{o.itemName}</td>
-                        <td className="py-3 px-2">{o.playerId}</td>
-                        <td className="py-3 px-2">{o.zoneId}</td>
-                        <td className="py-3 px-2 uppercase">{o.paymentMethod}</td>
-                        <td className="py-3 px-2 font-semibold">₹{o.price}</td>
-                        <td className="py-3 px-2">{o.status}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+            {activeTab === "transactions" && (
+              <TransactionsTab transactions={transactions} />
             )}
+
+            {activeTab === "pricing" && (
+              <PricingTab
+                pricingType={pricingType}
+                setPricingType={setPricingType}
+                slabs={slabs}
+                setSlabs={setSlabs}
+                savingPricing={savingPricing}
+                onSave={savePricing}
+              />
+            )}
+
           </div>
         </div>
       </section>

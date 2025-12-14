@@ -1,39 +1,16 @@
 import { NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
-
-/* ================= PRICE RULES ================= */
-const getMarkupPercentByPrice = (userType, price) => {
-  const p = Number(price);
-
-  // OWNER → always base price
-  if (userType === "owner") return 0;
-
-  // ADMIN PRICING
-  if (userType === "admin") {
-    if (p < 100) return 0.5;
-    if (p < 200) return 1;
-    if (p < 500) return 1.5;
-    if (p < 700) return 2;
-    return 3;
-  }
-
-  // NORMAL USER PRICING
-  if (p < 100) return 1;
-  if (p < 200) return 2;
-  if (p < 500) return 3;
-  if (p < 700) return 4;
-  return 7;
-};
+import { connectDB } from "@/lib/mongodb";
+import PricingConfig from "@/models/PricingConfig";
 
 export async function GET(req, context) {
-  const { slug } =await  context.params;
+  const { slug } = await context.params;
 
   try {
     /* ================= OPTIONAL JWT ================= */
     let userType = "user"; // default
 
     const authHeader = req.headers.get("authorization");
-    console.log("Auth Header:", authHeader);
 
     if (authHeader?.startsWith("Bearer ")) {
       try {
@@ -43,13 +20,8 @@ export async function GET(req, context) {
         if (decoded?.userType) {
           userType = decoded.userType;
         }
-
-        console.log("JWT received:", {
-          userId: decoded.userId,
-          userType,
-        });
       } catch {
-        console.log("Invalid JWT → using user pricing");
+        // invalid token → fallback to user pricing
       }
     }
 
@@ -70,10 +42,30 @@ export async function GET(req, context) {
       return NextResponse.json(data);
     }
 
+    /* ================= DB PRICING ================= */
+    await connectDB();
+
+    let pricingConfig = null;
+
+    // Owner always sees base price
+    if (userType !== "owner") {
+      pricingConfig = await PricingConfig.findOne({ userType }).lean();
+    }
+
     /* ================= APPLY DYNAMIC MARKUP ================= */
     data.data.itemId = data.data.itemId.map((item) => {
       const basePrice = Number(item.sellingPrice);
-      const markupPercent = getMarkupPercentByPrice(userType, basePrice);
+      let markupPercent = 0;
+
+      if (pricingConfig?.slabs?.length) {
+        const slab = pricingConfig.slabs.find(
+          (s) => basePrice >= s.min && basePrice < s.max
+        );
+
+        if (slab) {
+          markupPercent = slab.percent;
+        }
+      }
 
       const finalPrice =
         markupPercent === 0
@@ -83,7 +75,8 @@ export async function GET(req, context) {
       return {
         ...item,
         sellingPrice: finalPrice,
-        // Optional debug info (remove later if not needed)
+
+        // optional debug (remove in prod)
         _pricing: {
           basePrice,
           markupPercent,
@@ -93,7 +86,6 @@ export async function GET(req, context) {
     });
 
     return NextResponse.json(data);
-
   } catch (error) {
     console.error("Game Fetch Error:", error);
     return NextResponse.json(
