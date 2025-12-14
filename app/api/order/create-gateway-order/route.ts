@@ -94,6 +94,7 @@ export async function POST(req: Request) {
     });
 
     const data = await resp.json();
+    console.log("XTRAGATEWAY CREATE ORDER RESPONSE:", data);
 
     // --------------------------
     // PAYMENT ORDER CREATION FAILED

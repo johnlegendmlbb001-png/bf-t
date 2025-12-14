@@ -84,7 +84,7 @@ export async function POST(req: Request) {
       playerId: order.playerId,
       zoneId: order.zoneId,
       productId :order.gameSlug,             // ← product comes from remark2
-      currency:  "INR",
+      currency:  "USD",
     };
 
     // ----------------------------------
