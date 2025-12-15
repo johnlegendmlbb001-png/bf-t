@@ -1,5 +1,7 @@
 "use client";
 
+const BRAND = process.env.NEXT_PUBLIC_BRAND_NAME || "Blue Buff";
+
 export default function TermsAndConditions() {
   return (
     <main className="min-h-screen bg-[var(--background)] text-[var(--foreground)] px-6 py-10">
@@ -8,82 +10,127 @@ export default function TermsAndConditions() {
         <h1 className="text-4xl font-bold text-[var(--accent)] mb-6">
           Terms & Conditions
         </h1>
-        <p className="text-[var(--muted)] mb-10">Last updated: November 2025</p>
+
+        <p className="text-[var(--muted)] mb-10">
+          Last updated: November 2025
+        </p>
 
         <p className="mb-6 leading-relaxed">
-          Welcome to <strong>BlueBuff</strong>! By accessing or using our site—
-          wallpapers, blogs, hero guides, esports updates, or event information—
-          you agree to follow these Terms & Conditions.
+          Welcome to <strong>{BRAND}</strong>. By accessing or using our website,
+          placing an order, or using any of our services, you agree to be bound by
+          these Terms & Conditions. If you do not agree, please do not use our
+          platform.
         </p>
 
         {/* 1 */}
         <h2 className="text-2xl font-semibold text-[var(--accent)] mb-3">
-          1. Use of the Site
+          1. Use of the Platform
         </h2>
         <p className="mb-6 leading-relaxed">
-          You agree to use BlueBuff only for lawful purposes and in a manner that 
-          does not harm, disrupt, or negatively affect the experience of other users.
+          You agree to use {BRAND} only for lawful purposes and in compliance with
+          these Terms.
           <br /><br />
-          Misuse, spamming, scraping, or unauthorized downloading of bulk content 
-          is strictly prohibited.
+          You must ensure that all information provided during checkout — such as
+          game ID, server/zone, and contact details — is accurate. Incorrect
+          details may result in failed or irreversible top-ups.
         </p>
 
         {/* 2 */}
         <h2 className="text-2xl font-semibold text-[var(--accent)] mb-3">
-          2. Intellectual Property
+          2. Orders & Top-Ups
         </h2>
         <p className="mb-6 leading-relaxed">
-          All wallpapers, graphics, blog content, and UI elements on BlueBuff are 
-          protected by copyright.
-          <br /><br />
-          You may download wallpapers or images for <strong>personal, non-commercial use only</strong>.
+          • All top-up orders are processed automatically or semi-automatically.  
           <br />
-          Redistribution, republishing, or selling our content is not allowed without permission.
+          • Once an order is successfully delivered, it is considered final.  
+          <br />
+          • We are not responsible for losses caused by incorrect user input
+          (wrong game ID, server, or account).
+          <br /><br />
+          By placing an order, you confirm that you are the authorized user or
+          have permission to top up the selected game account.
         </p>
 
         {/* 3 */}
         <h2 className="text-2xl font-semibold text-[var(--accent)] mb-3">
-          3. User Submissions
+          3. Payments
         </h2>
         <p className="mb-6 leading-relaxed">
-          If you submit content to BlueBuff (such as custom wallpapers, ideas, 
-          suggestions, or requests), you grant us a non-exclusive, royalty-free, 
-          worldwide license to display, modify, and distribute that content on our platform.
+          Payments are processed through trusted third-party payment gateways.
+          {BRAND} does not store sensitive payment information such as card
+          details or UPI credentials.
+          <br /><br />
+          Orders may be delayed or cancelled in cases of payment failure,
+          suspected fraud, or system issues.
         </p>
 
         {/* 4 */}
         <h2 className="text-2xl font-semibold text-[var(--accent)] mb-3">
-          4. Disclaimer
+          4. Refunds & Cancellations
         </h2>
         <p className="mb-6 leading-relaxed">
-          BlueBuff is a <strong>fan-made, unofficial platform</strong> dedicated to Mobile Legends: Bang Bang.
-          We do not claim ownership of MLBB artwork, characters, logos, or in-game assets.
+          Due to the digital and instant nature of game top-ups:
           <br /><br />
-          All trademarks and rights belong to <strong>Moonton / ByteDance</strong> and respective creators.
+          • Successfully delivered top-ups are <strong>non-refundable</strong>.  
+          <br />
+          • Refunds may be considered only if the order fails and the balance is
+          not credited to the game account.
+          <br /><br />
+          Any refund decision is at the sole discretion of {BRAND}.
         </p>
 
         {/* 5 */}
         <h2 className="text-2xl font-semibold text-[var(--accent)] mb-3">
-          5. Limitation of Liability
+          5. Prohibited Activities
         </h2>
         <p className="mb-6 leading-relaxed">
-          BlueBuff is provided for informational and entertainment purposes only.  
-          We are not responsible for:
+          You must not:
           <br /><br />
-          • Errors in blogs, builds, or game guides  
-          • Esports updates that may change over time  
-          • Damages caused by using or relying on site content  
-          • Website downtime or technical issues  
+          • Attempt to exploit pricing, system bugs, or promotions  
+          <br />
+          • Use the platform for fraudulent or unauthorized transactions  
+          <br />
+          • Interfere with platform security or automated systems  
+          <br />
+          • Resell services without written permission (unless explicitly allowed)
         </p>
 
         {/* 6 */}
         <h2 className="text-2xl font-semibold text-[var(--accent)] mb-3">
-          6. Changes to Terms
+          6. Third-Party Games & Trademarks
+        </h2>
+        <p className="mb-6 leading-relaxed">
+          {BRAND} is an independent platform and is <strong>not affiliated with,
+          endorsed by, or sponsored by</strong> any game publisher.
+          <br /><br />
+          All game names, logos, and trademarks belong to their respective owners.
+        </p>
+
+        {/* 7 */}
+        <h2 className="text-2xl font-semibold text-[var(--accent)] mb-3">
+          7. Limitation of Liability
+        </h2>
+        <p className="mb-6 leading-relaxed">
+          {BRAND} shall not be liable for:
+          <br /><br />
+          • Losses caused by incorrect user information  
+          <br />
+          • Delays due to maintenance, API downtime, or external providers  
+          <br />
+          • Game account bans or actions taken by game publishers  
+          <br />
+          • Indirect or consequential damages
+        </p>
+
+        {/* 8 */}
+        <h2 className="text-2xl font-semibold text-[var(--accent)] mb-3">
+          8. Changes to Terms
         </h2>
         <p className="leading-relaxed">
-          BlueBuff may update these Terms & Conditions from time to time.  
-          Changes take effect immediately upon being posted on this page.  
-          We encourage you to review the Terms periodically.
+          {BRAND} reserves the right to update these Terms & Conditions at any
+          time. Changes take effect immediately once posted on this page.
+          Continued use of the platform indicates acceptance of the updated
+          terms.
         </p>
       </div>
     </main>

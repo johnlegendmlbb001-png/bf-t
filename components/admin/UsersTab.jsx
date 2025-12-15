@@ -28,22 +28,24 @@ export default function UsersTab({
               <td className="py-3 px-2">{u.email}</td>
               <td className="py-3 px-2">{u.order}</td>
               <td className="py-3 px-2">
-                <select
-                  value={u.userType}
-                  disabled={u.userType === "owner"}
-                  onChange={(e) =>
-                    onChangeRole(u.userId, e.target.value)
-                  }
-                  className="
-                    bg-[var(--background)]
-                    border border-[var(--border)]
-                    rounded-lg px-2 py-1
-                  "
-                >
-                  <option value="user">User</option>
-                  <option value="admin">Admin</option>
-                  <option value="owner">Owner</option>
-                </select>
+              <select
+  value={u.userType}
+  disabled={u.userType === "owner"}
+  onChange={(e) => onChangeRole(u.userId, e.target.value)}
+  className="
+    bg-[var(--background)]
+    border border-[var(--border)]
+    rounded-lg px-2 py-1
+  "
+>
+  <option value="user">User</option>
+  <option value="admin">Admin</option>
+
+  {u.userType === "owner" && (
+    <option value="owner">Owner</option>
+  )}
+</select>
+
                 {updatingUserId === u.userId && (
                   <span className="ml-2 text-xs text-[var(--muted)]">
                     Updating…

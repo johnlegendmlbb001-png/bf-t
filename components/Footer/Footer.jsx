@@ -9,6 +9,8 @@ import {
   FaYoutube,
 } from "react-icons/fa6";
 
+const BRAND = process.env.NEXT_PUBLIC_BRAND_NAME || "Meow Ji";
+
 export default function Footer() {
   return (
     <footer className="border-t border-[var(--border)] bg-[var(--card)] text-[var(--muted)] mt-16">
@@ -17,14 +19,15 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8">
           
-          {/* Logo + Description */}
+          {/* Brand + Description */}
           <div className="col-span-2 md:col-span-1">
             <h2 className="text-xl sm:text-2xl font-extrabold mb-2 bg-gradient-to-r from-[var(--accent)] to-purple-500 bg-clip-text text-transparent">
-              Blue<span className="text-[var(--foreground)]"> BUFF</span>
+              {BRAND}
             </h2>
+
             <p className="text-xs leading-relaxed max-w-[220px]">
-              MLBB wallpapers, esports updates, hero showcases,  
-              and events — everything for Mobile Legends fans ⚡
+              Instant game top-ups, secure payments, and automated delivery —
+              available 24×7 for gamers ⚡
             </p>
           </div>
 
@@ -38,21 +41,11 @@ export default function Footer() {
               Home
             </Link>
 
-            {/* <Link href="/wallpaper" className="text-xs sm:text-sm hover:text-[var(--accent)] transition">
-              Wallpapers
+            <Link href="/games" className="text-xs sm:text-sm hover:text-[var(--accent)] transition">
+              Games
             </Link>
 
-            <Link href="/heroes" className="text-xs sm:text-sm hover:text-[var(--accent)] transition">
-              Heroes
-            </Link>
-
-            <Link href="/events" className="text-xs sm:text-sm hover:text-[var(--accent)] transition">
-              Events
-            </Link> */}
-
-            {/* <Link href="/esports" className="text-xs sm:text-sm hover:text-[var(--accent)] transition">
-              Esports
-            </Link> */}
+          
           </div>
 
           {/* Support Links */}
@@ -95,7 +88,7 @@ export default function Footer() {
               </a>
 
               <a
-                href="https://instagram.com/zynx.v1"
+                href="https://twitter.com"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:text-[var(--accent)] hover:scale-110 transition-all"
@@ -137,7 +130,7 @@ export default function Footer() {
               </a>
 
               <a
-                href="https://instagram.com/zynx.v1"
+                href="https://twitter.com"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:text-[var(--accent)] hover:scale-110 transition-all"
@@ -161,18 +154,17 @@ export default function Footer() {
             <p className="text-[10px] sm:text-xs text-center sm:text-left order-first sm:order-none">
               Made with{" "}
               <FaHeart className="inline w-3 h-3 text-[var(--accent)] mx-0.5 animate-pulse" />{" "}
-              by <span className="text-[var(--accent)] font-medium">Blue Buff</span>
+              by <span className="text-[var(--accent)] font-medium">{BRAND}</span>
             </p>
 
             {/* Copyright */}
             <p className="text-[10px] sm:text-xs">
-              © {new Date().getFullYear()} Blue Buff. All rights reserved.
+              © {new Date().getFullYear()} {BRAND}. All rights reserved.
             </p>
 
           </div>
         </div>
       </div>
-
     </footer>
   );
 }

@@ -1,79 +1,143 @@
 "use client";
 
+const BRAND = process.env.NEXT_PUBLIC_BRAND_NAME || "Blue Buff";
+
 export default function PrivacyPolicy() {
   return (
     <main className="min-h-screen bg-[var(--background)] text-[var(--foreground)] px-6 py-10">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-4xl font-bold text-[var(--accent)] mb-6">Privacy Policy</h1>
-        <p className="text-[var(--muted)] mb-10">Last updated: November 2025</p>
+        <h1 className="text-4xl font-bold text-[var(--accent)] mb-6">
+          Privacy Policy
+        </h1>
 
-        <p className="mb-6 leading-relaxed">
-          At <strong>BlueBuff</strong>, your privacy is important to us. This Privacy Policy explains how we collect, store, and protect your information when you access our website, explore wallpapers, read blogs, or interact with MLBB-related content.
+        <p className="text-[var(--muted)] mb-10">
+          Last updated: November 2025
         </p>
 
-        <h2 className="text-2xl font-semibold text-[var(--accent)] mb-3">1. Information We Collect</h2>
         <p className="mb-6 leading-relaxed">
-          We may collect:
-          <br /><br />
-          <strong>• Information you provide</strong> — such as when you contact us or submit feedback.  
-          <br />
-          <strong>• Analytics & technical data</strong> — including browser type, device information, IP address, and usage statistics to improve website performance.
+          At <strong>{BRAND}</strong>, we respect your privacy and are committed to
+          protecting your personal information. This Privacy Policy explains how
+          we collect, use, and safeguard your data when you use our website to
+          purchase game top-ups, browse services, or interact with our platform.
         </p>
 
-        <h2 className="text-2xl font-semibold text-[var(--accent)] mb-3">2. How We Use Your Information</h2>
+        {/* 1 */}
+        <h2 className="text-2xl font-semibold text-[var(--accent)] mb-3">
+          1. Information We Collect
+        </h2>
         <p className="mb-6 leading-relaxed">
-          Your information helps us:
+          We may collect the following types of information:
           <br /><br />
-          • Improve BlueBuff’s performance and user experience  
-          <br />
-          • Customize content such as wallpapers, hero guides, and esports updates  
-          <br />
-          • Ensure smooth and secure website functionality  
+          <strong>• Account & Order Information</strong> — such as email address,
+          phone number, game ID, server/zone details, and order history required
+          to process top-ups.
           <br /><br />
-          We do <strong>not</strong> sell or share your personal data for commercial purposes.
+          <strong>• Payment Information</strong> — payments are handled securely
+          through third-party payment gateways. We do not store sensitive payment
+          details such as card numbers or UPI credentials.
+          <br /><br />
+          <strong>• Technical & Usage Data</strong> — including IP address,
+          browser type, device information, pages visited, and timestamps for
+          security, analytics, and fraud prevention.
         </p>
 
-        <h2 className="text-2xl font-semibold text-[var(--accent)] mb-3">3. Cookies</h2>
+        {/* 2 */}
+        <h2 className="text-2xl font-semibold text-[var(--accent)] mb-3">
+          2. How We Use Your Information
+        </h2>
         <p className="mb-6 leading-relaxed">
-          We use cookies to enhance your browsing experience — such as remembering preferences, improving loading speed, and analyzing traffic.  
+          Your data is used to:
+          <br /><br />
+          • Process and deliver game top-ups accurately  
           <br />
-          You may disable cookies in your browser settings, but certain site features may not function properly.
+          • Verify transactions and prevent fraud or misuse  
+          <br />
+          • Provide customer support and order assistance  
+          <br />
+          • Improve platform performance, reliability, and user experience  
+          <br /><br />
+          We do <strong>not</strong> sell, rent, or trade your personal information
+          to third parties for marketing purposes.
         </p>
 
-        <h2 className="text-2xl font-semibold text-[var(--accent)] mb-3">4. Third-Party Services</h2>
+        {/* 3 */}
+        <h2 className="text-2xl font-semibold text-[var(--accent)] mb-3">
+          3. Cookies & Tracking
+        </h2>
         <p className="mb-6 leading-relaxed">
-          BlueBuff may use third-party services such as analytics tools, content delivery networks, or social media integrations.  
-          These platforms may collect their own usage data through their embedded features.
+          {BRAND} uses cookies and similar technologies to:
+          <br /><br />
+          • Remember user preferences  
           <br />
-          We recommend reviewing their individual privacy policies for more details.
+          • Maintain login sessions  
+          <br />
+          • Analyze traffic and platform usage  
+          <br /><br />
+          You may disable cookies via your browser settings, but certain features
+          of the website may not function properly.
         </p>
 
-        <h2 className="text-2xl font-semibold text-[var(--accent)] mb-3">5. Your Rights</h2>
+        {/* 4 */}
+        <h2 className="text-2xl font-semibold text-[var(--accent)] mb-3">
+          4. Third-Party Services
+        </h2>
         <p className="mb-6 leading-relaxed">
-          You may request:  
+          We may use trusted third-party services for:
           <br /><br />
-          • Access to the data we have about you  
+          • Payment processing  
           <br />
-          • Correction of inaccurate information  
+          • Analytics and performance monitoring  
           <br />
-          • Deletion of your data  
+          • Hosting and content delivery  
           <br /><br />
-          To exercise these rights, please contact us through our{" "}
+          These providers operate under their own privacy policies. We recommend
+          reviewing them for additional information on how your data is handled.
+        </p>
+
+        {/* 5 */}
+        <h2 className="text-2xl font-semibold text-[var(--accent)] mb-3">
+          5. Data Security
+        </h2>
+        <p className="mb-6 leading-relaxed">
+          We implement appropriate technical and organizational measures to
+          protect your data against unauthorized access, alteration, or loss.
+          However, no online platform can guarantee 100% security.
+        </p>
+
+        {/* 6 */}
+        <h2 className="text-2xl font-semibold text-[var(--accent)] mb-3">
+          6. Your Rights
+        </h2>
+        <p className="mb-6 leading-relaxed">
+          You have the right to:
+          <br /><br />
+          • Request access to your personal data  
+          <br />
+          • Request correction of inaccurate information  
+          <br />
+          • Request deletion of your data (subject to legal and transactional requirements)  
+          <br /><br />
+          To exercise these rights, please contact us via our{" "}
           <a href="/contact" className="text-[var(--accent)] hover:underline">
             Contact Page
           </a>.
         </p>
 
-        <h2 className="text-2xl font-semibold text-[var(--accent)] mb-3">6. Changes to This Policy</h2>
+        {/* 7 */}
+        <h2 className="text-2xl font-semibold text-[var(--accent)] mb-3">
+          7. Policy Updates
+        </h2>
         <p className="mb-6 leading-relaxed">
-          We may update this Privacy Policy as our platform evolves.  
-          Any changes will be posted here with a revised “Last updated” date.
+          We may update this Privacy Policy periodically to reflect changes in
+          our services, technology, or legal requirements. Any updates will be
+          posted on this page with a revised “Last updated” date.
         </p>
 
         <p className="leading-relaxed">
-          For any questions or concerns, reach out to us via{" "}
+          If you have any questions or concerns regarding this Privacy Policy,
+          please contact{" "}
           <a href="/contact" className="text-[var(--accent)] hover:underline">
-            BlueBuff Contact
+            {BRAND} Support
           </a>.
         </p>
       </div>

@@ -19,7 +19,7 @@ export default function GamesPage() {
   const [searchQuery, setSearchQuery] = useState("");
 
   /* ================= CONFIG ================= */
-  const SPECIAL_MLBB_GAME = "MLBB SMALL/PHP";
+  const SPECIAL_MLBB_GAME = "MLBB SMALL";
 
   const outOfStockGames = [
     "PUBG Mobile",

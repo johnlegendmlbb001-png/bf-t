@@ -88,6 +88,8 @@ export default function Header() {
         <nav className="hidden md:flex items-center space-x-6 text-[var(--muted)]">
           <Link href="/" className="hover:text-[var(--foreground)]">Home</Link>
           <Link href="/region" className="hover:text-[var(--foreground)]">Region</Link>
+                    <Link href="/games" className="hover:text-[var(--foreground)]">Games</Link>
+
           <Link href="/services" className="hover:text-[var(--foreground)]">Services</Link>
         </nav>
 
@@ -213,7 +215,10 @@ export default function Header() {
         <nav className="flex flex-col px-6 py-4 space-y-4 text-[var(--muted)]">
           <Link href="/" onClick={() => setMenuOpen(false)}>Home</Link>
           <Link href="/region" onClick={() => setMenuOpen(false)}>Region</Link>
+                              <Link href="/games" onClick={() => setMenuOpen(false)}>Games</Link>
+
           <Link href="/services" onClick={() => setMenuOpen(false)}>Services</Link>
+
         </nav>
       </div>
     </header>

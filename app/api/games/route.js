@@ -15,19 +15,31 @@ export async function GET() {
 
     const data = await response.json();
 
-    /* ================= FILTER OUT TEST GAME ================= */
+    /* ================= FILTER & NORMALIZE ================= */
 
-    // Filter from `games`
-    const filteredGames = data?.data?.games?.filter(
-      (game) => game.gameSlug !== "test-1637"
-    );
+    const normalizeGame = (game) => {
+      if (game?.gameName === "MLBB SMALL/PHP") {
+        return {
+          ...game,
+          gameName: "MLBB SMALL",
+        };
+      }
+      return game;
+    };
 
-    // Filter from `category -> gameId`
+    /* ================= FILTER FROM GAMES ================= */
+
+    const filteredGames = data?.data?.games
+      ?.filter((game) => game.gameSlug !== "test-1637")
+      ?.map(normalizeGame);
+
+    /* ================= FILTER FROM CATEGORY ================= */
+
     const filteredCategories = data?.data?.category?.map((cat) => ({
       ...cat,
-      gameId: cat.gameId.filter(
-        (game) => game.gameSlug !== "test-1637"
-      ),
+      gameId: cat.gameId
+        ?.filter((game) => game.gameSlug !== "test-1637")
+        ?.map(normalizeGame),
     }));
 
     return NextResponse.json({

@@ -8,6 +8,7 @@ export async function PATCH(req) {
 
     // ---------------- AUTH ----------------
     const auth = req.headers.get("authorization");
+
     if (!auth?.startsWith("Bearer ")) {
       return Response.json({ message: "Unauthorized" }, { status: 401 });
     }
@@ -38,11 +39,23 @@ export async function PATCH(req) {
       );
     }
 
-    // ---------------- UPDATE ----------------
+    // ---------------- FETCH USER ----------------
     const user = await User.findOne({ userId });
 
     if (!user) {
       return Response.json({ message: "User not found" }, { status: 404 });
+    }
+
+    /**
+     * 🔒 CRITICAL RULE
+     * Owner role is immutable and UNIQUE.
+     * No one (even an owner) can assign owner role via API.
+     */
+    if (newUserType === "owner" && user.userType !== "owner") {
+      return Response.json(
+        { message: "Owner role cannot be assigned" },
+        { status: 403 }
+      );
     }
 
     // Optional safety: prevent owner downgrade
@@ -53,6 +66,7 @@ export async function PATCH(req) {
       );
     }
 
+    // ---------------- UPDATE ----------------
     user.userType = newUserType;
     await user.save();
 
