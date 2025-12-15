@@ -67,10 +67,11 @@ export async function GET(req, context) {
         }
       }
 
-      const finalPrice =
-        markupPercent === 0
-          ? basePrice
-          : Math.ceil(basePrice * (1 + markupPercent / 100));
+const finalPrice =
+  markupPercent === 0
+    ? Number(basePrice.toFixed(2))
+    : Number((basePrice * (1 + markupPercent / 100)).toFixed(2));
+
 
       return {
         ...item,
