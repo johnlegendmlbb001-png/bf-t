@@ -88,7 +88,7 @@ export default function Footer() {
               </a>
 
               <a
-                href="https://twitter.com"
+                href="https://x.com/tk_dev_"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:text-[var(--accent)] hover:scale-110 transition-all"
@@ -130,7 +130,7 @@ export default function Footer() {
               </a>
 
               <a
-                href="https://twitter.com"
+                href="https://x.com/tk_dev_"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:text-[var(--accent)] hover:scale-110 transition-all"

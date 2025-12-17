@@ -203,7 +203,7 @@ const updateOrderStatus = async (orderId, status) => {
           <div className="mb-6 bg-[var(--card)] border border-[var(--border)] rounded-xl p-5">
             <p className="text-sm text-[var(--muted)]">Account Balance</p>
             <p className="text-2xl font-bold text-[var(--accent)]">
-              {balance !== null ? `₹${balance}` : "Loading..."}
+              {balance !== null ? `${balance}` : "Loading..."}
             </p>
           </div>
 

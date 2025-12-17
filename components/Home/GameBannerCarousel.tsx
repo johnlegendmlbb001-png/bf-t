@@ -146,13 +146,13 @@ export default function GameBannerCarousel() {
           {/* NAV */}
           <button
             onClick={goPrev}
-            className="absolute left-3 top-1/2 -translate-y-1/2 z-40 w-10 h-10 rounded-full bg-white/10 backdrop-blur border border-white/10"
+            className="absolute left-3 top-1/2 -translate-y-1/2 z-40 w-10 h-10 rounded-full bg-white/10  border border-white/10"
           >
             ‹
           </button>
           <button
             onClick={goNext}
-            className="absolute right-3 top-1/2 -translate-y-1/2 z-40 w-10 h-10 rounded-full bg-white/10 backdrop-blur border border-white/10"
+            className="absolute right-3 top-1/2 -translate-y-1/2 z-40 w-10 h-10 rounded-full bg-white/10  border border-white/10"
           >
             ›
           </button>

@@ -35,21 +35,21 @@ export default function ContactPage() {
           {/* 🌐 Social Links */}
           <div className="flex gap-5 mt-6">
             <a
-              href="https://instagram.com"
+              href="https://www.instagram.com/zynx.v1"
               target="_blank"
               className="p-3 rounded-full bg-[var(--card)] border border-[var(--border)] hover:bg-[var(--accent)] hover:text-white transition-all"
             >
               <FaInstagram size={24} />
             </a>
             <a
-              href="https://twitter.com"
+              href="https://x.com/tk_dev_"
               target="_blank"
               className="p-3 rounded-full bg-[var(--card)] border border-[var(--border)] hover:bg-[var(--accent)] hover:text-white transition-all"
             >
               <FaTwitter size={24} />
             </a>
             <a
-              href="https://discord.gg"
+              href="https://www.instagram.com/zynx.v1"
               target="_blank"
               className="p-3 rounded-full bg-[var(--card)] border border-[var(--border)] hover:bg-[var(--accent)] hover:text-white transition-all"
             >

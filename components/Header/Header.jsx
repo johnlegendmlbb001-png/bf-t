@@ -79,7 +79,7 @@ export default function Header() {
         {/* LOGO */}
         <Link href="/" className="text-2xl font-bold flex items-center gap-1">
           <span className="text-[var(--accent)]">Blue</span>
-          <span className="animated-underline text-[var(--foreground)]">
+          <span className=" text-[var(--foreground)]">
             Buff
           </span>
         </Link>
