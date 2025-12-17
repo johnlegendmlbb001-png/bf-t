@@ -1,3 +1,6 @@
+"use client";
+
+import { memo } from "react";
 import {
   FaBolt,
   FaShieldAlt,
@@ -7,7 +10,9 @@ import {
   FaRobot,
 } from "react-icons/fa";
 
-const highlights = [
+/* ================= DATA ================= */
+
+const HIGHLIGHTS = [
   {
     title: "24/7",
     subtitle: "Instant Delivery",
@@ -52,47 +57,87 @@ const highlights = [
   },
 ];
 
-export default function TrustHighlights() {
+/* ================= CARD ================= */
+
+const HighlightCard = memo(function HighlightCard({
+  title,
+  subtitle,
+  icon: Icon,
+  accent,
+  text,
+}) {
   return (
-    <section className="py-16 px-6 bg-[var(--background)] text-[var(--foreground)]">
-      <div className="max-w-6xl mx-auto">
+    <div
+      className="
+        group relative rounded-2xl p-6 text-center
+        bg-[var(--card)]
+        border border-[var(--border)]
+        transition-all duration-300 ease-out
+        hover:-translate-y-1
+        hover:shadow-xl hover:shadow-black/20
+        hover:border-[var(--accent)]
+      "
+    >
+      {/* Soft glow (cheap, GPU-friendly) */}
+      <div
+        className={`
+          pointer-events-none absolute inset-0 rounded-2xl
+          opacity-0 group-hover:opacity-100
+          bg-gradient-to-br ${accent}
+          transition-opacity duration-300
+        `}
+      />
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-5">
-          {highlights.map((item, i) => {
-            const Icon = item.icon;
-
-            return (
-              <div
-                key={i}
-                className="group relative bg-[var(--card)] border border-[var(--border)]
-                           rounded-2xl p-6 text-center
-                           transition-all duration-300
-                           hover:-translate-y-1 hover:shadow-xl
-                           hover:border-[var(--accent)]"
-              >
-                {/* Gradient glow */}
-                <div
-                  className={`absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100
-                              bg-gradient-to-br ${item.accent}
-                              blur-xl transition-opacity`}
-                />
-
-                <div className="relative z-10 flex flex-col items-center gap-3">
-                  <Icon className={`text-2xl ${item.text}`} />
-
-                  <p className={`text-xl font-extrabold ${item.text}`}>
-                    {item.title}
-                  </p>
-
-                  <p className="text-sm text-[var(--muted)]">
-                    {item.subtitle}
-                  </p>
-                </div>
-              </div>
-            );
-          })}
+      <div className="relative z-10 flex flex-col items-center gap-3">
+        {/* Icon bubble */}
+        <div
+          className={`
+            flex items-center justify-center
+            w-12 h-12 rounded-full
+            bg-black/30 border border-white/10
+            ${text}
+          `}
+        >
+          <Icon className="text-xl" aria-hidden />
         </div>
 
+        <p className={`text-xl font-extrabold ${text}`}>
+          {title}
+        </p>
+
+        <p className="text-sm text-[var(--muted)]">
+          {subtitle}
+        </p>
+      </div>
+    </div>
+  );
+});
+
+/* ================= SECTION ================= */
+
+export default function TrustHighlights() {
+  return (
+    <section
+      className="
+        py-16 px-6
+        bg-[var(--background)]
+        text-[var(--foreground)]
+      "
+      aria-label="Trust highlights"
+    >
+      <div className="max-w-6xl mx-auto">
+        <div
+          className="
+            grid gap-5
+            grid-cols-2
+            md:grid-cols-3
+            lg:grid-cols-6
+          "
+        >
+          {HIGHLIGHTS.map((item) => (
+            <HighlightCard key={item.subtitle} {...item} />
+          ))}
+        </div>
       </div>
     </section>
   );

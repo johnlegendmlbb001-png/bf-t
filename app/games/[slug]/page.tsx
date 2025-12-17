@@ -200,8 +200,8 @@ export default function GameDetailPage() {
                     </span>
                   )}
                   
-                  <p className="text-sm font-semibold truncate mb-2">
-                    {item.itemName}
+                  <p className="text-sm font-semibold mb-2">
+                    💎{item.itemName}
                   </p>
 
                   <div className="space-y-1">
@@ -280,8 +280,8 @@ export default function GameDetailPage() {
                   </span>
                 )}
                 
-                <p className="text-sm font-semibold truncate mb-2">
-                  {item.itemName}
+                <p className="text-sm font-semibold  mb-2">
+                  💎{item.itemName}
                 </p>
 
                 <div className="space-y-1">
@@ -320,7 +320,7 @@ export default function GameDetailPage() {
 
           <div className="flex-1 min-w-0">
             <h2 className="text-xl font-bold mb-2">
-              {activeItem.itemName}
+              💎{activeItem.itemName}
             </h2>
 
             <div className="flex items-baseline gap-3">

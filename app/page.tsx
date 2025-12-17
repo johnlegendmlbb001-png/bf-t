@@ -2,19 +2,18 @@
 import HomeSection from "@/components/Home/Home";
 
 export const metadata = {
-  title: "ZynxAnime - Free Anime Wallpapers & Live Backgrounds",
+  title: "MLBB Topup India | Buy MLBB Diamonds Instantly at Best Price",
   description:
-    "Discover high-quality anime wallpapers, live backgrounds, and PFPs from popular anime like Naruto, One Piece, Demon Slayer, and more — all free to download.",
+    "MLBB Topup India – Buy Mobile Legends diamonds instantly with fast delivery, secure payments, and best prices. Trusted MLBB diamond top-up platform in India.",
   keywords: [
-    "anime wallpapers",
-    "live anime backgrounds",
-    "anime PFP",
-    "ZynxAnime",
-    "Naruto wallpaper",
-    "One Piece wallpaper",
-    "Demon Slayer wallpaper",
-    "Attack on Titan wallpaper",
-    "anime 4K wallpapers",
+    "mlbb topup",
+    "mlbb topup india",
+    "mlbb diamond topup",
+    "buy mlbb diamonds",
+    "mlbb diamond recharge",
+    "mobile legends topup",
+    "mlbb diamonds india",
+    "cheap mlbb diamonds",
   ],
 };
 
