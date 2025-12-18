@@ -23,7 +23,6 @@ export async function POST(req) {
     try {
       decoded = jwt.verify(token, process.env.JWT_SECRET);
     } catch (err) {
-      console.error("JWT error:", err.message);
       return Response.json(
         { success: false, message: "Invalid or expired token" },
         { status: 401 }
@@ -40,25 +39,24 @@ export async function POST(req) {
       );
     }
 
-    console.log("🔐 Authenticated user:", {
-      userId: user.userId,
-      email: user.email,
-      phone: user.phone,
-    });
+    /* ================= BODY PARAMS (SAFE DEFAULTS) ================= */
+    const body = await req.json().catch(() => ({}));
 
-    /* ================= BUILD STRICT FILTER ================= */
-    let filter = {};
+    const page = Math.max(1, Number(body.page) || 1);
+    const limit = Math.max(1, Number(body.limit) || 10);
+    const search = body.search?.trim();
+
+    const skip = (page - 1) * limit;
+
+    /* ================= STRICT USER FILTER ================= */
+    let userFilter = {};
 
     if (user.email && user.phone) {
-      // MOST STRICT (recommended)
-      filter = {
-        email: user.email,
-        phone: user.phone,
-      };
+      userFilter = { email: user.email, phone: user.phone };
     } else if (user.email) {
-      filter = { email: user.email };
+      userFilter = { email: user.email };
     } else if (user.phone) {
-      filter = { phone: user.phone };
+      userFilter = { phone: user.phone };
     } else {
       return Response.json(
         { success: false, message: "User has no identifiers" },
@@ -66,24 +64,45 @@ export async function POST(req) {
       );
     }
 
-    console.log("📦 Order filter:", filter);
+    /* ================= SEARCH FILTER (OPTIONAL) ================= */
+    let finalFilter = userFilter;
+
+    if (search) {
+      finalFilter = {
+        $and: [
+          userFilter,
+          {
+            $or: [
+              { orderId: { $regex: search, $options: "i" } },
+              { gameSlug: { $regex: search, $options: "i" } },
+              { itemName: { $regex: search, $options: "i" } },
+              { status: { $regex: search, $options: "i" } },
+            ],
+          },
+        ],
+      };
+    }
 
     /* ================= FETCH ORDERS ================= */
-    const orders = await Order.find(filter)
+    const orders = await Order.find(finalFilter)
       .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
       .lean();
 
-    console.log(`✅ Orders returned: ${orders.length}`);
+    const totalCount = await Order.countDocuments(finalFilter);
 
     return Response.json(
       {
         success: true,
         orders,
+        page,
+        limit,
         count: orders.length,
+        totalCount,
       },
       { status: 200 }
     );
-
   } catch (error) {
     console.error("Fetch Orders Error:", error);
     return Response.json(
