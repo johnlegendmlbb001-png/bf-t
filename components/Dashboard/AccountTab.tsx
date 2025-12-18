@@ -45,85 +45,107 @@ export default function AccountTab({ userDetails }: AccountTabProps) {
       }
 
       setNewPass("");
-      setPassSuccess("Password updated!");
+      setPassSuccess("Password updated successfully");
       setTimeout(() => setPassSuccess(""), 2000);
-    } catch (error) {
+    } catch {
       setLoadingPass(false);
       setPassError("Failed to update password. Please try again.");
     }
   };
 
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div>
-        <h2 className="text-3xl font-bold mb-3">Account Details</h2>
-        <p className="text-[var(--muted)] text-sm">
-          Manage your account information and password.
-        </p>
+    <div className="max-w-5xl mx-auto space-y-8">
+
+      {/* ================= HEADER ================= */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div>
+          <h2 className="text-2xl sm:text-3xl font-bold">Account</h2>
+          <p className="text-sm text-[var(--muted)]">
+            View your profile and secure your account.
+          </p>
+        </div>
       </div>
 
-      {/* User Info Box */}
-      <div className="p-6 rounded-2xl border border-[var(--border)] bg-[var(--card)] shadow-sm space-y-3">
-        <InfoRow label="Name" value={userDetails.name} />
-        <InfoRow label="Email" value={userDetails.email} />
-        <InfoRow label="Phone" value={userDetails.phone} />
-      </div>
+      {/* ================= MAIN GRID ================= */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-      {/* Password Section */}
-      <div className="p-6 rounded-2xl border border-[var(--border)] bg-[var(--card)] shadow-sm">
-        <h3 className="text-xl font-semibold mb-4">Change Password</h3>
+        {/* ================= PROFILE CARD ================= */}
+        <div className="lg:col-span-1 rounded-2xl border border-[var(--border)] bg-[var(--card)] p-6">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="w-14 h-14 rounded-full bg-[var(--accent)]/15 flex items-center justify-center text-lg font-bold text-[var(--accent)]">
+              {userDetails.name?.charAt(0) || "U"}
+            </div>
+            <div>
+              <p className="font-semibold">{userDetails.name}</p>
+              <p className="text-xs text-[var(--muted)]">Account Holder</p>
+            </div>
+          </div>
 
-        {/* Status Messages */}
-        {passSuccess && (
-          <p className="text-green-500 text-sm mb-2 animate-fadeIn">
-            {passSuccess}
+          <ProfileItem label="Email" value={userDetails.email} />
+          <ProfileItem label="Phone" value={userDetails.phone} />
+        </div>
+
+        {/* ================= SECURITY CARD ================= */}
+        <div className="lg:col-span-2 rounded-2xl border border-[var(--border)] bg-[var(--card)] p-6">
+          <h3 className="text-lg font-semibold mb-1">Security</h3>
+          <p className="text-sm text-[var(--muted)] mb-5">
+            Update your password to keep your account secure.
           </p>
-        )}
-        {passError && (
-          <p className="text-red-500 text-sm mb-2 animate-fadeIn">
-            {passError}
-          </p>
-        )}
 
-        {/* Input */}
-        <input
-          type="password"
-          placeholder="Enter new password"
-          value={newPass}
-          onChange={(e) => {
-            setNewPass(e.target.value);
-            setPassError("");
-          }}
-          className="w-full p-3 rounded-xl border border-[var(--border)] bg-transparent focus:outline-none focus:ring-2 focus:ring-[var(--accent)] transition mb-4"
-        />
-
-        {/* Button */}
-        <button
-          disabled={loadingPass}
-          onClick={handlePasswordUpdate}
-          className={`w-full py-3 rounded-xl text-white font-medium transition hover:opacity-90 
-          bg-[var(--accent)] disabled:opacity-50 disabled:cursor-not-allowed`}
-        >
-          {loadingPass ? (
-            <span className="flex items-center justify-center gap-2">
-              <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-              Updating...
-            </span>
-          ) : (
-            "Update Password"
+          {/* Alerts */}
+          {passSuccess && (
+            <div className="mb-4 rounded-xl bg-green-500/10 text-green-500 px-4 py-2 text-sm">
+              {passSuccess}
+            </div>
           )}
-        </button>
+          {passError && (
+            <div className="mb-4 rounded-xl bg-red-500/10 text-red-500 px-4 py-2 text-sm">
+              {passError}
+            </div>
+          )}
+
+          {/* Password Input */}
+          <div className="flex flex-col sm:flex-row gap-4">
+            <input
+              type="password"
+              placeholder="New password (min 6 chars)"
+              value={newPass}
+              onChange={(e) => {
+                setNewPass(e.target.value);
+                setPassError("");
+              }}
+              className="flex-1 p-3 sm:p-4 rounded-xl border border-[var(--border)] bg-transparent focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
+            />
+
+            <button
+              disabled={loadingPass}
+              onClick={handlePasswordUpdate}
+              className="sm:min-w-[200px] px-6 py-3 rounded-xl bg-[var(--accent)] text-white font-medium transition hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loadingPass ? (
+                <span className="flex items-center justify-center gap-2">
+                  <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                  Updating
+                </span>
+              ) : (
+                "Update Password"
+              )}
+            </button>
+          </div>
+        </div>
+
       </div>
     </div>
   );
 }
 
-function InfoRow({ label, value }: { label: string; value: string }) {
+/* ================= SUB COMPONENTS ================= */
+
+function ProfileItem({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex justify-between items-center py-2 border-b border-[var(--border)]/40 last:border-b-0">
-      <span className="text-[var(--muted)]">{label}</span>
-      <span className="font-medium">{value}</span>
+    <div className="mb-4">
+      <p className="text-xs text-[var(--muted)] mb-1">{label}</p>
+      <p className="font-medium break-all">{value}</p>
     </div>
   );
 }
