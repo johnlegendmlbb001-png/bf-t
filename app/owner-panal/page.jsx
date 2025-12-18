@@ -12,6 +12,7 @@ import UsersTab from "@/components/admin/UsersTab";
 import OrdersTab from "@/components/admin/OrdersTab";
 import PricingTab from "@/components/admin/PricingTab";
 import TransactionsTab from "@/components/admin/TransactionsTab";
+import SupportQueriesTab from "@/components/admin/SupportQueriesTab";
 
 export default function AdminPanalPage() {
   const [activeTab, setActiveTab] = useState("users");
@@ -19,8 +20,9 @@ export default function AdminPanalPage() {
   const [users, setUsers] = useState([]);
   const [orders, setOrders] = useState([]);
   const [transactions, setTransactions] = useState([]);
-  const [balance, setBalance] = useState(null);
+  const [queries, setQueries] = useState([]);
 
+  const [balance, setBalance] = useState(null);
   const [updatingUserId, setUpdatingUserId] = useState(null);
 
   /* ================= TABLE CONTROLS ================= */
@@ -50,6 +52,8 @@ export default function AdminPanalPage() {
       ? orders
       : activeTab === "transactions"
       ? transactions
+      : activeTab === "queries"
+      ? queries
       : [];
 
   /* ================= FETCH BALANCE ================= */
@@ -96,6 +100,17 @@ export default function AdminPanalPage() {
     );
     const data = await res.json();
     setTransactions(data.data || []);
+  };
+
+  /* ================= FETCH SUPPORT QUERIES ================= */
+  const fetchQueries = async () => {
+    const token = localStorage.getItem("token");
+    const res = await fetch(
+      `/api/admin/support-queries?page=${page}&limit=${limit}&search=${search}`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    const data = await res.json();
+    setQueries(data.data || []);
   };
 
   /* ================= CHANGE USER ROLE ================= */
@@ -152,7 +167,8 @@ export default function AdminPanalPage() {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}` },
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify({
           userType: pricingType,
           slabs: normalizeSlabs(slabs),
@@ -192,6 +208,27 @@ export default function AdminPanalPage() {
     fetchOrders();
   };
 
+  /* ================= UPDATE QUERY STATUS ================= */
+  const updateQueryStatus = async (id, status) => {
+    const token = localStorage.getItem("token");
+    const res = await fetch("/api/admin/support-queries/status", {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ id, status }),
+    });
+
+    if (!res.ok) {
+      const data = await res.json();
+      alert(data.message || "Failed to update status");
+      return;
+    }
+
+    fetchQueries();
+  };
+
   /* ================= EFFECTS ================= */
   useEffect(() => {
     fetchBalance();
@@ -205,6 +242,7 @@ export default function AdminPanalPage() {
     if (activeTab === "users") fetchUsers();
     if (activeTab === "orders") fetchOrders();
     if (activeTab === "transactions") fetchTransactions();
+    if (activeTab === "queries") fetchQueries();
     if (activeTab === "pricing") fetchPricing(pricingType);
   }, [activeTab, pricingType, page, search]);
 
@@ -219,7 +257,7 @@ export default function AdminPanalPage() {
               Admin Panel
             </h1>
             <p className="text-[var(--muted)]">
-              Manage users, orders, transactions & pricing
+              Manage users, orders, transactions, queries & pricing
             </p>
           </div>
 
@@ -233,23 +271,27 @@ export default function AdminPanalPage() {
 
           {/* TABS */}
           <div className="mb-6 flex flex-wrap gap-3">
-            {["users", "orders", "transactions", "pricing"].map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`px-4 py-2 rounded-xl font-semibold border text-sm ${
-                  activeTab === tab
-                    ? "bg-[var(--accent)] text-black"
-                    : "bg-[var(--card)] border-[var(--border)]"
-                }`}
-              >
-                {tab.toUpperCase()}
-              </button>
-            ))}
+            {["users", "orders", "transactions", "queries", "pricing"].map(
+              (tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`px-4 py-2 rounded-xl font-semibold border text-sm ${
+                    activeTab === tab
+                      ? "bg-[var(--accent)] text-black"
+                      : "bg-[var(--card)] border-[var(--border)]"
+                  }`}
+                >
+                  {tab.toUpperCase()}
+                </button>
+              )
+            )}
           </div>
 
           {/* SEARCH */}
-          {["users", "orders", "transactions"].includes(activeTab) && (
+          {["users", "orders", "transactions", "queries"].includes(
+            activeTab
+          ) && (
             <div className="mb-4 relative">
               <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted)]" />
               <input
@@ -285,6 +327,13 @@ export default function AdminPanalPage() {
               <TransactionsTab transactions={transactions} />
             )}
 
+            {activeTab === "queries" && (
+              <SupportQueriesTab
+                queries={queries}
+                onUpdateStatus={updateQueryStatus}
+              />
+            )}
+
             {activeTab === "pricing" && (
               <PricingTab
                 pricingType={pricingType}
@@ -299,35 +348,33 @@ export default function AdminPanalPage() {
             )}
           </div>
 
-          {/* PAGINATION (only if data exists) */}
-       {/* PAGINATION (only if data exists) */}
-{currentData.length > 0 &&
-  ["users", "orders", "transactions"].includes(activeTab) && (
-    <div className="mt-4 flex justify-between items-center">
-      {/* PREV */}
-      <button
-        disabled={page === 1}
-        onClick={() => setPage((p) => Math.max(1, p - 1))}
-        className="p-2 rounded-lg border disabled:opacity-40 disabled:cursor-not-allowed"
-      >
-        <FiChevronLeft size={20} />
-      </button>
+          {/* PAGINATION */}
+          {currentData.length > 0 &&
+            ["users", "orders", "transactions", "queries"].includes(
+              activeTab
+            ) && (
+              <div className="mt-4 flex justify-between items-center">
+                <button
+                  disabled={page === 1}
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  className="p-2 rounded-lg border disabled:opacity-40"
+                >
+                  <FiChevronLeft size={20} />
+                </button>
 
-      <span className="text-sm text-[var(--muted)]">
-        Page {page}
-      </span>
+                <span className="text-sm text-[var(--muted)]">
+                  Page {page}
+                </span>
 
-      {/* NEXT */}
-      <button
-        disabled={currentData.length < limit}
-        onClick={() => setPage((p) => p + 1)}
-        className="p-2 rounded-lg border disabled:opacity-40 disabled:cursor-not-allowed"
-      >
-        <FiChevronRight size={20} />
-      </button>
-    </div>
-)}
-
+                <button
+                  disabled={currentData.length < limit}
+                  onClick={() => setPage((p) => p + 1)}
+                  className="p-2 rounded-lg border disabled:opacity-40"
+                >
+                  <FiChevronRight size={20} />
+                </button>
+              </div>
+            )}
         </div>
       </section>
     </AuthGuard>
