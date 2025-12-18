@@ -1,22 +1,19 @@
+/* ================= BASE ================= */
 .snow {
   pointer-events: none;
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   overflow: hidden;
   z-index: 9999;
 }
 
+/* ================= FALLING SNOW ================= */
 .snow::before,
 .snow::after {
   content: "";
   position: absolute;
+  inset: 0;
   top: -100%;
-  left: 0;
-  right: 0;
-  bottom: 0;
   background-image:
     radial-gradient(2px 2px at 20px 30px, #fff, transparent),
     radial-gradient(2px 2px at 40px 70px, #fff, transparent),
@@ -25,7 +22,7 @@
     radial-gradient(3px 3px at 130px 80px, #fff, transparent),
     radial-gradient(2px 2px at 160px 120px, #fff, transparent);
   background-size: 200px 200px;
-  animation: snow 12s linear infinite;
+  animation: snowFall 12s linear infinite;
   opacity: 0.6;
 }
 
@@ -34,11 +31,86 @@
   opacity: 0.4;
 }
 
-@keyframes snow {
-  0% {
-    transform: translateY(0);
+/* ================= BIG RARE SNOW ================= */
+.big-snow {
+  position: absolute;
+  top: -20%;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff 60%, transparent 70%);
+  opacity: 0.9;
+  animation: bigSnowFall linear infinite;
+}
+
+.big-snow:nth-child(1) {
+  left: 15%;
+  animation-duration: 18s;
+  animation-delay: -6s;
+}
+.big-snow:nth-child(2) {
+  left: 45%;
+  animation-duration: 22s;
+  animation-delay: -12s;
+}
+.big-snow:nth-child(3) {
+  left: 75%;
+  animation-duration: 26s;
+  animation-delay: -18s;
+}
+
+/* ================= SANTA ================= */
+.santa-snow {
+  position: absolute;
+  top: -30%;
+  left: 35%;
+  font-size: 26px;
+  animation: santaFall 30s linear infinite;
+  animation-delay: -20s;
+  opacity: 0.85;
+}
+
+/* ================= SNOW GROUND ================= */
+.snow-ground {
+  position: absolute;
+  bottom: 0;
+  left: -10%;
+  width: 120%;
+  height: 12vh;
+  background:
+    radial-gradient(circle at 10% 40%, #fff 60%, transparent 65%),
+    radial-gradient(circle at 30% 50%, #fff 65%, transparent 70%),
+    radial-gradient(circle at 50% 45%, #fff 60%, transparent 68%),
+    radial-gradient(circle at 70% 55%, #fff 65%, transparent 72%),
+    radial-gradient(circle at 90% 40%, #fff 60%, transparent 65%);
+  background-size: 25% 100%;
+  background-repeat: repeat-x;
+  filter: blur(1.2px);
+  animation: snowBuildUp 40s ease-in-out infinite alternate;
+  opacity: 0.95;
+}
+
+/* ================= ANIMATIONS ================= */
+@keyframes snowFall {
+  from { transform: translateY(0); }
+  to { transform: translateY(100%); }
+}
+
+@keyframes bigSnowFall {
+  from { transform: translateY(0) scale(1); }
+  to { transform: translateY(120vh) scale(1.15); }
+}
+
+@keyframes santaFall {
+  from { transform: translateY(0) rotate(0deg); }
+  to { transform: translateY(120vh) rotate(360deg); }
+}
+
+@keyframes snowBuildUp {
+  from {
+    height: 6vh;
   }
-  100% {
-    transform: translateY(100%);
+  to {
+    height: 14vh;
   }
 }

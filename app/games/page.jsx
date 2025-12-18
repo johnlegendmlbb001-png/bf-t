@@ -105,7 +105,7 @@ const GameCardGrid = ({ game }) => {
           : "hover:-translate-y-1 hover:shadow-xl hover:border-[var(--accent)] border-[var(--border)]"
       }`}
     >
-      <div className="relative h-40 w-full overflow-hidden">
+<div className="relative w-full aspect-[4/3] overflow-hidden bg-black/10">
         <Image
           src={game.gameImageId?.image || logo}
           alt={game.gameName}

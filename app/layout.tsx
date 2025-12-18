@@ -46,6 +46,9 @@ export default function RootLayout({
     <html lang="en">
       <body className="bg-black text-white">
           <div className="snow" />
+  <span className="big-snow"></span>
+  <span className="big-snow"></span>
+  <span className="big-snow"></span>
 
         <Header />
                 <ChristmasPopup />
