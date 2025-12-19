@@ -13,6 +13,8 @@ import OrdersTab from "@/components/admin/OrdersTab";
 import PricingTab from "@/components/admin/PricingTab";
 import TransactionsTab from "@/components/admin/TransactionsTab";
 import SupportQueriesTab from "@/components/admin/SupportQueriesTab";
+import BannersTab from "@/components/admin/BannersTab";
+
 
 export default function AdminPanalPage() {
   const [activeTab, setActiveTab] = useState("users");
@@ -24,6 +26,8 @@ export default function AdminPanalPage() {
 
   const [balance, setBalance] = useState(null);
   const [updatingUserId, setUpdatingUserId] = useState(null);
+  const [banners, setBanners] = useState([]);
+
 
   /* ================= TABLE CONTROLS ================= */
   const [search, setSearch] = useState("");
@@ -79,6 +83,15 @@ export default function AdminPanalPage() {
     const data = await res.json();
     setUsers(data.data || []);
   };
+  const fetchBanners = async () => {
+  const token = localStorage.getItem("token");
+  const res = await fetch("/api/game-banners", {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  const data = await res.json();
+  setBanners(data.data || []);
+};
+
 
   /* ================= FETCH ORDERS ================= */
   const fetchOrders = async () => {
@@ -237,6 +250,10 @@ export default function AdminPanalPage() {
   useEffect(() => {
     resetControls();
   }, [activeTab]);
+  useEffect(() => {
+  if (activeTab === "banners") fetchBanners();
+}, [activeTab]);
+
 
   useEffect(() => {
     if (activeTab === "users") fetchUsers();
@@ -271,7 +288,7 @@ export default function AdminPanalPage() {
 
           {/* TABS */}
           <div className="mb-6 flex flex-wrap gap-3">
-            {["users", "orders", "transactions", "queries", "pricing"].map(
+{["users", "orders", "transactions", "queries", "pricing", "banners"].map(
               (tab) => (
                 <button
                   key={tab}
@@ -333,6 +350,10 @@ export default function AdminPanalPage() {
                 onUpdateStatus={updateQueryStatus}
               />
             )}
+            {activeTab === "banners" && (
+  <BannersTab banners={banners} onRefresh={fetchBanners} />
+)}
+
 
             {activeTab === "pricing" && (
               <PricingTab

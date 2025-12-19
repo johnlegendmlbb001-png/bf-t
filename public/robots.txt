@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+
+# Block internal / useless paths
+Disallow: /api/
+Disallow: /admin/
+Disallow: /_next/
+Disallow: /dashboard/
+
+# Sitemap location
+Sitemap: https://mlbbtopup.in/sitemap.xml
