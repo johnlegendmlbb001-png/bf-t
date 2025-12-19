@@ -85,7 +85,7 @@ export default function AdminPanalPage() {
   };
   const fetchBanners = async () => {
   const token = localStorage.getItem("token");
-  const res = await fetch("/api/game-banners", {
+  const res = await fetch("/api/admin/banners/game-banners", {
     headers: { Authorization: `Bearer ${token}` },
   });
   const data = await res.json();
