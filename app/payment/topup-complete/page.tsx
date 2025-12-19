@@ -63,7 +63,9 @@ export default function TopupComplete() {
             <FaCheckCircle className="text-5xl text-green-500" />
           )}
           {status === "failed" && (
-            <FaTimesCircle className="text-5xl text-red-500" />
+            // <FaTimesCircle className="text-5xl text-red-500" />
+                        <FaCheckCircle className="text-5xl text-green-500" />
+
           )}
         </div>
 
@@ -78,7 +80,9 @@ export default function TopupComplete() {
             "Your order has been confirmed and will be delivered automatically."}
 
           {status === "failed" &&
-            "If the amount was deducted, delivery or refund will be processed shortly."}
+            // "If the amount was deducted, delivery or refund will be processed shortly."}
+                        "Your order has been confirmed and will be delivered automatically."}
+
         </p>
 
         {/* ACTION */}
