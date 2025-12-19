@@ -6,14 +6,14 @@ export default function ChristmasPopup() {
   const [show, setShow] = useState(false);
 
   useEffect(() => {
-    const seen = sessionStorage.getItem("christmas_popup_seen");
+    const seen = localStorage.getItem("christmas_popup_seen");
     if (!seen) {
       setShow(true);
     }
   }, []);
 
   const closePopup = () => {
-    sessionStorage.setItem("christmas_popup_seen", "true");
+    localStorage.setItem("christmas_popup_seen", "true");
     setShow(false);
   };
 
