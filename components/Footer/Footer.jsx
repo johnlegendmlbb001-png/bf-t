@@ -29,6 +29,7 @@ const FOOTER_LINKS = [
       { label: "Privacy Policy", href: "/privacy-policy" },
       { label: "Terms & Conditions", href: "/terms-and-conditions" },
       { label: "Contact Us", href: "/contact" },
+      {label: "Refund Policy", href: "/refund-policy" },
     ],
   },
 ];
