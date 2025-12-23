@@ -1,0 +1,135 @@
+[
+  {
+    "id": "MLBB-1001",
+    "slug": "mlbb-mythic-collector-1001",
+
+    "title": "Premium MLBB Account – Collector Skins",
+    "price": 15999,
+    "currency": "INR",
+
+    "rank": {
+      "current": "Mythic Glory",
+      "highest": "Mythic Glory",
+      "stars": 72
+    },
+
+    "account": {
+      "server": "India",
+      "accountAgeYears": 4,
+      "loginType": "Moonton",
+      "rebindable": true
+    },
+
+    "heroes": {
+      "total": 250
+    },
+
+    "skins": {
+      "total": 380,
+      "legend": 3,
+      "grand": 6,
+      "epic": 42,
+      "collector": [
+        "Ling Collector",
+        "Valentina Collector"
+      ]
+    },
+
+    "diamonds": {
+      "balance": 0,
+      "doubleDiamondAvailable": [50, 150, 250, 500]
+    },
+
+    "currencies": {
+      "coa": 3200,
+      "magicCore": 2
+    },
+
+    "cosmetics": {
+      "epicRecall": true,
+      "exclusiveRecalls": true,
+      "exclusiveSpawnEffects": true,
+      "exclusiveEliminationEffects": true
+    },
+
+    "collection": {
+      "points": 4850,
+      "tier": "Renowned Collector V"
+    },
+
+    "heroTitles": {
+      "global": [
+        {
+          "hero": "Ling",
+          "rank": "Global 82"
+        },
+        {
+          "hero": "Hayabusa",
+          "rank": "Global 211"
+        }
+      ],
+      "supreme": [
+        "Ling"
+      ]
+    },
+
+    "availability": {
+      "status": "available",
+      "holdAllowed": true
+    },
+
+    "dealer": {
+      "owner": "Yeageren",
+      "contact": {
+        "whatsapp": "https://wa.me/919999999999",
+        "telegram": null,
+        "instagram": null
+      }
+    },
+
+    "resellers": [
+      {
+        "name": "ResellerOne",
+        "contact": "https://t.me/resellerone"
+      }
+    ],
+
+    "media": {
+      "images": [],
+      "fallbackImage": "/logo.png"
+    },
+
+    "highlights": [
+      "Mythic Glory 72★",
+      "2 Collector Skins",
+      "Epic Recall",
+      "Renowned Collector V",
+      "Global Ranked Heroes"
+    ],
+
+    "others": [
+      {
+        "key": "Squad Skins",
+        "value": "Available"
+      },
+      {
+        "key": "Battle Emotes",
+        "value": "Multiple"
+      },
+      {
+        "key": "Sacred Statues",
+        "value": "Included"
+      }
+    ],
+
+    "meta": {
+      "verifiedByAdmin": true,
+      "createdAt": "2025-01-05",
+      "updatedAt": "2025-01-10",
+      "views": 0,
+      "shares": 0
+    },
+
+    "description": "High value MLBB account with rare collector skins, global hero titles, and premium inventory."
+  }
+]

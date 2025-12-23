@@ -3,32 +3,50 @@ import { connectDB } from "@/lib/mongodb";
 import Order from "@/models/Order";
 
 export async function POST(req: Request) {
+  const startTime = Date.now();
+
   try {
+    console.log("🔵 [VERIFY] Incoming request");
+
     await connectDB();
+    console.log("🟢 [DB] Connected");
 
     const { orderId } = await req.json();
-    console.log("Verifying Order ID:", orderId);
+
+    console.log("🔍 [VERIFY] Order ID received:", orderId);
+
     if (!orderId) {
-      return NextResponse.json({ success: false, message: "Missing orderId" });
+      console.warn("🟠 [VERIFY] Missing orderId");
+      return NextResponse.json({
+        success: false,
+        message: "Missing orderId",
+      });
     }
-    console.log("Local id:", orderId);
 
     // ----------------------------------
     // FETCH LOCAL ORDER
     // ----------------------------------
-    let order = await Order.findOne({ orderId });
-    
-    console.log("Local Order:", order);
+    const order = await Order.findOne({ orderId });
+
+    console.log("📦 [ORDER] Fetched:", {
+      orderId: order?.orderId,
+      status: order?.status,
+      paymentStatus: order?.paymentStatus,
+      topupStatus: order?.topupStatus,
+      price: order?.price,
+    });
 
     if (!order) {
+      console.warn("🟥 [ORDER] Not found:", orderId);
       return NextResponse.json({
         success: false,
         message: "Order not found",
       });
     }
 
-    // If already successful, prevent duplicate topups
+    // Prevent duplicate processing
     if (order.status === "success") {
+      console.info("🔁 [ORDER] Already processed:", orderId);
       return NextResponse.json({
         success: true,
         message: "Already processed",
@@ -39,6 +57,8 @@ export async function POST(req: Request) {
     // ----------------------------------
     // CHECK PAYMENT STATUS VIA GATEWAY
     // ----------------------------------
+    console.log("🌐 [GATEWAY] Checking payment status");
+
     const formData = new URLSearchParams();
     formData.append("user_token", process.env.XTRA_USER_TOKEN!);
     formData.append("order_id", orderId);
@@ -50,10 +70,18 @@ export async function POST(req: Request) {
     });
 
     const data = await resp.json();
-    console.log("Gateway Response:", data);
+
+    console.log("📨 [GATEWAY] Response:", {
+      status: data?.status,
+      txnStatus: data?.result?.txnStatus,
+      amount:
+        data?.result?.amount ||
+        data?.result?.txnAmount ||
+        data?.result?.orderAmount,
+    });
 
     // ----------------------------------
-    // FIXED SUCCESS CONDITIONS
+    // CHECK GATEWAY SUCCESS
     // ----------------------------------
     const isSuccess =
       data?.status == true ||
@@ -61,8 +89,11 @@ export async function POST(req: Request) {
       data?.result?.txnStatus == "SUCCESS";
 
     if (!isSuccess) {
+      console.warn("🟥 [PAYMENT] Failed or pending");
+
       order.status = "failed";
-       order.paymentStatus = "failed";
+      order.paymentStatus = "failed";
+      order.gatewayResponse = data;
       await order.save();
 
       return NextResponse.json({
@@ -72,29 +103,75 @@ export async function POST(req: Request) {
     }
 
     // ----------------------------------
-    // PAYMENT SUCCESS
+    // 🔒 STRICT PRICE MATCH CHECK
     // ----------------------------------
-    // order.status = "success";
-        order.paymentStatus = "success";
+    const paidAmount = Number(
+      data?.result?.amount ||
+      data?.result?.txnAmount ||
+      data?.result?.orderAmount
+    );
 
-    order.gatewayResponse = data; // Store full raw API response
+    console.log("💰 [PAYMENT] Amount check", {
+      expected: order.price,
+      paid: paidAmount,
+    });
+
+    if (!paidAmount) {
+      console.error("🟥 [PAYMENT] Paid amount missing");
+
+      order.status = "failed";
+      order.paymentStatus = "failed";
+      order.gatewayResponse = data;
+      await order.save();
+
+      return NextResponse.json({
+        success: false,
+        message: "Unable to verify paid amount",
+      });
+    }
+
+    if (paidAmount !== Number(order.price)) {
+      console.error("🚨 [FRAUD] Price mismatch detected", {
+        orderId,
+        expected: order.price,
+        paid: paidAmount,
+      });
+
+      order.status = "fraud";
+      order.paymentStatus = "failed";
+      order.topupStatus = "failed";
+      order.gatewayResponse = data;
+      await order.save();
+
+      return NextResponse.json({
+        success: false,
+        message: "Payment amount mismatch detected",
+      });
+    }
+
+    // ----------------------------------
+    // PAYMENT VERIFIED
+    // ----------------------------------
+    console.log("✅ [PAYMENT] Verified successfully");
+
+    order.paymentStatus = "success";
+    order.gatewayResponse = data;
     await order.save();
 
     // ----------------------------------
-    // EXTRACT USER + PRODUCT FROM ORDER
+    // PREPARE TOPUP PAYLOAD
     // ----------------------------------
-    const userId = data?.result?.remark1 || order.userId;      
-    const productId = data?.result?.remark2 || order.itemSlug; 
-
     const externalPayload = {
-      playerId: String(order.playerId),     // ✅ force string
-  zoneId: String(order.zoneId),         // ✅ force string
-  productId: `${order?.gameSlug}_${order?.itemSlug}`, // 🔒 REQUIRED
-      currency:  "USD",
+      playerId: String(order.playerId),
+      zoneId: String(order.zoneId),
+      productId: `${order.gameSlug}_${order.itemSlug}`,
+      currency: "USD",
     };
 
+    console.log("🎮 [TOPUP] Sending payload:", externalPayload);
+
     // ----------------------------------
-    // CALL GAME API SERVICE
+    // CALL GAME API
     // ----------------------------------
     const gameResp = await fetch(
       `${process.env.NEXT_PUBLIC_API_BASE}/api-service/order`,
@@ -109,45 +186,54 @@ export async function POST(req: Request) {
     );
 
     const gameData = await gameResp.json();
-    console.log("GAME API RESPONSE:", gameData);
-    console.log("EXTERNAL PAYLOAD:", externalPayload);
+
+    console.log("🎯 [TOPUP] Response:", {
+      ok: gameResp.ok,
+      status: gameData?.status,
+      success: gameData?.success,
+    });
 
     // ----------------------------------
-    // SAVE GAME API RESPONSE
+    // SAVE TOPUP RESULT
     // ----------------------------------
-const topupSuccess =
+    const topupSuccess =
       gameResp.ok &&
       (gameData?.success === true ||
         gameData?.status === true ||
         gameData?.result?.status === "SUCCESS");
 
     order.externalResponse = gameData;
-      if (topupSuccess) {
+
+    if (topupSuccess) {
+      console.log("🏁 [ORDER] Topup SUCCESS:", orderId);
       order.topupStatus = "success";
-      order.status = "success"; // ✅ FINAL SUCCESS
+      order.status = "success";
     } else {
+      console.warn("🟥 [ORDER] Topup FAILED:", orderId);
       order.topupStatus = "failed";
       order.status = "failed";
     }
+
     await order.save();
+
+    console.log(
+      `⏱️ [VERIFY] Completed in ${Date.now() - startTime}ms`
+    );
 
     return NextResponse.json({
       success: true,
       message: "Topup successful",
       topupResponse: gameData,
     });
-
-
-    
-//     if (isTopupSuccess) {
-//   order.topup = "success";  
-// } else {
-//   order.topup = "failed";    
-// }
   } catch (error: any) {
-    console.error("Verify error:", error);
+    console.error("🔥 [VERIFY] Fatal error:", error);
+
     return NextResponse.json(
-      { success: false, message: "Server error", error: error.message },
+      {
+        success: false,
+        message: "Server error",
+        error: error.message,
+      },
       { status: 500 }
     );
   }
