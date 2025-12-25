@@ -21,6 +21,7 @@ const HEADER_CONFIG = {
     { label: "Region Check", href: "/region" },
     { label: "All Games", href: "/games" },
     { label: "Services", href: "/services" },
+    { label: "Blogs", href: "/blog" },
   ],
 
   userMenu: {

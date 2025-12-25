@@ -92,5 +92,35 @@ export default function sitemap() {
       changeFrequency: "yearly",
       priority: 0.4,
     },
+     {
+      url: `${baseUrl}/blog`,
+      lastModified: now,
+      changeFrequency: "daily",
+      priority: 0.4,
+    },
+     {
+      url: `${baseUrl}/blog/is-mlbb-top-up-legal-in-india`,
+      lastModified: now,
+      changeFrequency: "daily",
+      priority: 0.4,
+    },
+     {
+      url: `${baseUrl}/blog/how-to-buy-mlbb-diamonds-safely-in-india`,
+      lastModified: now,
+      changeFrequency: "daily",
+      priority: 0.4,
+    },
+     {
+      url: `${baseUrl}/blog/mlbb-weekly-pass-price-in-india`,
+      lastModified: now,
+      changeFrequency: "daily",
+      priority: 0.4,
+    },
+     {
+      url: `${baseUrl}/idsonnsell`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.4,
+    },
   ];
 }

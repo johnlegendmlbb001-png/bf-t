@@ -4,8 +4,17 @@ export default function robots() {
       {
         userAgent: "*",
         allow: "/",
+        disallow: [
+          "/api/",
+          "/_next/",
+          "/admin",
+          "/dashboard",
+        ],
       },
     ],
-    sitemap: "https://mlbbtopup.in/sitemap.xml",
+    sitemap: [
+      "https://mlbbtopup.in/sitemap.xml",
+      "https://mlbbtopup.in/sitemap.txt",
+    ],
   };
 }

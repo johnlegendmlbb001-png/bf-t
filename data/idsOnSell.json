@@ -17,14 +17,14 @@
     ]
   },
     "rank": {
-      "current": "Mythic Glory",
+      "current": "Mythic",
       "highest": "Mythic Glory",
-      "stars": 72
+      "stars": 104
     },
 
     "account": {
       "server": "India",
-      "accountAgeYears": 4,
+      "accountAgeYears": 3,
       "loginType": "Moonton",
       "rebindable": true
     },
@@ -43,12 +43,11 @@
   ],
   "grand": 6,
   "grandList": [
-    "Gusion – Cyber Ops",
-    "Eudora – Thunder God",
-    "Lesley – Deadly Beauty",
-    "Zilong – Dragon Knight",
-    "Natalia – Shadow Ops",
-    "Johnson – Speeding Bullet"
+    "Gusion – 11.11",
+    "Vaxana – Zenith",
+    "Karina – Kof",
+    "thamuz-kunfu panda"
+ 
   ],
   "exquisite": 12,
   "exquisiteList": [
@@ -61,26 +60,24 @@
   ],
   "epic": 42,
   "collector": [
-    "Ling Collector",
-    "Valentina Collector"
+    "Natalia Collector",
+    "pharsha Collector"
   ],
   "rare": [
-    "Fanny – Skylark",
-    "Chou – Go Ballistic",
-    "Kagura – Rainy Walk",
-    "Hayabusa – Shura"
+    "Aldos-M1"
+ 
   ]
 }
 ,
 
     "diamonds": {
-      "balance": 10,
+      "balance": 300,
       "doubleDiamondAvailable": [50, 150, 250, 500]
     },
 
     "currencies": {
-      "coa": 3200,
-      "magicCore": 2
+      "coa": 200,
+      "magicCore": 121
     },
 
     "cosmetics": {
@@ -91,19 +88,19 @@
     },
 
     "collection": {
-      "points": 4850,
-      "tier": "Renowned Collector V"
+      "points": 164000,
+      "tier": "Mega Collector V"
     },
 
     "heroTitles": {
       "global": [
         {
           "hero": "Ling",
-          "rank": "India 82"
+          "rank": ""
         },
         {
           "hero": "Hayabusa",
-          "rank": "India 211"
+          "rank": ""
         }
       ],
       "supreme": [
@@ -119,7 +116,7 @@
     "dealer": {
       "owner": "TK",
       "contact": {
-        "whatsapp": "https://wa.me/919999999999",
+        "whatsapp": "https://wa.me/6372305866",
         "telegram": null,
         "instagram": null
       }
@@ -128,7 +125,7 @@
     "resellers": [
       {
         "name": "ResellerOne",
-        "contact": "https://t.me/resellerone"
+        "contact": "https://wa.me/6372305866"
       }
     ],
 
@@ -138,11 +135,11 @@
     },
 
     "highlights": [
-      "Mythic Glory 72★",
+      "Mythic Glory 104★",
       "2 Collector Skins",
       "Epic Recall",
-      "Renowned Collector V",
-      "Supream Ranked Heroes"
+      "Mega Collector V",
+      "Advanced Server avaliable"
     ],
 
     "others": [
