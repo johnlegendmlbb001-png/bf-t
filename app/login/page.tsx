@@ -1,16 +1,24 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FiMail, FiPhone, FiLock, FiUser, FiKey } from "react-icons/fi";
 
 type Tab = "login" | "register" | "forgot";
+type Step = 1 | 2;
 
 export default function AuthPage() {
   const [tab, setTab] = useState<Tab>("login");
+  const [step, setStep] = useState<Step>(1);
   const [loading, setLoading] = useState(false);
-  const [step, setStep] = useState<1 | 2>(1);
 
-  const [loginData, setLoginData] = useState({ user: "", password: "" });
+  const [errors, setErrors] = useState<any>({});
+  const [success, setSuccess] = useState("");
+
+  const [loginData, setLoginData] = useState({
+    user: "",
+    password: "",
+  });
+
   const [regData, setRegData] = useState({
     name: "",
     email: "",
@@ -24,14 +32,25 @@ export default function AuthPage() {
     newPassword: "",
   });
 
-  const [errors, setErrors] = useState<any>({});
-  const [success, setSuccess] = useState("");
-
-  /* ---------- VALIDATION ---------- */
+  /* ---------- HELPERS ---------- */
   const isGmail = (email: string) =>
     /^[a-zA-Z0-9._%+-]+@gmail\.com$/.test(email);
+
   const isPhone = (phone: string) => /^[0-9]{10}$/.test(phone);
   const minLen = (txt: string, min: number) => txt.length >= min;
+
+  const clearMessages = () => {
+    setErrors({});
+    setSuccess("");
+  };
+
+  useEffect(() => {
+    clearMessages();
+    if (tab !== "forgot") {
+      setStep(1);
+      setForgotData({ email: "", otp: "", newPassword: "" });
+    }
+  }, [tab]);
 
   /* ================= LOGIN ================= */
   const handleLogin = async () => {
@@ -41,32 +60,35 @@ export default function AuthPage() {
     if (Object.keys(errs).length) return setErrors(errs);
 
     setLoading(true);
-    const res = await fetch("/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(loginData),
-    });
-    const data = await res.json();
-    setLoading(false);
+    clearMessages();
 
-    if (!data.success) return setErrors({ user: data.message });
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(loginData),
+      });
+      const data = await res.json();
 
-    localStorage.setItem("token", data.token);
-    localStorage.setItem("userName", data.user.name);
-    localStorage.setItem("email", data.user.email);
-    localStorage.setItem("phone", data.user.phone);
-    localStorage.setItem("userId", data.user.userId);
+      if (!data.success) return setErrors({ user: data.message });
 
-    setSuccess("Login successful! Redirecting...");
-    setTimeout(() => (window.location.href = "/"), 900);
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("userName", data.user.name);
+      localStorage.setItem("email", data.user.email);
+      localStorage.setItem("phone", data.user.phone);
+      localStorage.setItem("userId", data.user.userId);
+
+      setSuccess("Login successful! Redirecting...");
+      setTimeout(() => (window.location.href = "/"), 800);
+    } finally {
+      setLoading(false);
+    }
   };
 
   /* ================= REGISTER ================= */
   const handleRegister = async () => {
     let errs: any = {};
-
-    if (!regData.name || !minLen(regData.name, 3))
-      errs.name = "Min 3 characters";
+    if (!minLen(regData.name, 3)) errs.name = "Min 3 characters";
     if (!isGmail(regData.email)) errs.email = "Valid Gmail required";
     if (!isPhone(regData.phone)) errs.phone = "10 digit phone required";
     if (!minLen(regData.password, 6))
@@ -75,18 +97,23 @@ export default function AuthPage() {
     if (Object.keys(errs).length) return setErrors(errs);
 
     setLoading(true);
-    const res = await fetch("/api/auth/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(regData),
-    });
-    const data = await res.json();
-    setLoading(false);
+    clearMessages();
 
-    if (!data.success) return setErrors({ email: data.message });
+    try {
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(regData),
+      });
+      const data = await res.json();
 
-    setSuccess("Account created! Please login.");
-    setTab("login");
+      if (!data.success) return setErrors({ email: data.message });
+
+      setSuccess("Account created! Please login.");
+      setTab("login");
+    } finally {
+      setLoading(false);
+    }
   };
 
   /* ================= FORGOT PASSWORD ================= */
@@ -95,18 +122,23 @@ export default function AuthPage() {
       return setErrors({ email: "Valid Gmail required" });
 
     setLoading(true);
-    const res = await fetch("/api/auth/forgot-password/request", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: forgotData.email }),
-    });
-    const data = await res.json();
-    setLoading(false);
+    clearMessages();
 
-    if (!data.success) return setErrors({ email: data.message });
+    try {
+      const res = await fetch("/api/auth/forgot-password/request", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: forgotData.email }),
+      });
+      const data = await res.json();
 
-    setSuccess("OTP sent to your email");
-    setStep(2);
+      if (!data.success) return setErrors({ email: data.message });
+
+      setSuccess("OTP sent to your email");
+      setStep(2);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const resetPassword = async () => {
@@ -118,35 +150,35 @@ export default function AuthPage() {
     if (Object.keys(errs).length) return setErrors(errs);
 
     setLoading(true);
-    const res = await fetch("/api/auth/forgot-password/reset", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(forgotData),
-    });
-    const data = await res.json();
-    setLoading(false);
+    clearMessages();
 
-    if (!data.success) return setErrors({ otp: data.message });
+    try {
+      const res = await fetch("/api/auth/forgot-password/reset", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(forgotData),
+      });
+      const data = await res.json();
 
-    setSuccess("Password reset successful. Please login.");
-    setTab("login");
-    setStep(1);
+      if (!data.success) return setErrors({ otp: data.message });
+
+      setSuccess("Password reset successful. Please login.");
+      setTab("login");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <section className="min-h-screen flex items-center justify-center px-4">
       <div className="w-full max-w-md rounded-2xl border bg-[var(--card)] shadow-xl">
         {/* Tabs */}
-        <div className="grid grid-cols-2 text-sm font-semibold">
-          {tab !== "forgot" &&
-            ["login", "register"].map((t) => (
+        {tab !== "forgot" && (
+          <div className="grid grid-cols-2 text-sm font-semibold">
+            {["login", "register"].map((t) => (
               <button
                 key={t}
-                onClick={() => {
-                  setErrors({});
-                  setSuccess("");
-                  setTab(t as Tab);
-                }}
+                onClick={() => setTab(t as Tab)}
                 className={`py-4 ${
                   tab === t
                     ? "border-b-2 border-[var(--accent)] text-[var(--accent)]"
@@ -156,11 +188,12 @@ export default function AuthPage() {
                 {t === "login" ? "Login" : "Register"}
               </button>
             ))}
-        </div>
+          </div>
+        )}
 
         <div className="p-6 space-y-4">
           {success && (
-            <div className="text-green-500 text-center text-sm">{success}</div>
+            <div className="text-green-500 text-sm text-center">{success}</div>
           )}
 
           {/* LOGIN */}
@@ -188,11 +221,8 @@ export default function AuthPage() {
               />
 
               <button
-                className="text-xs text-[var(--accent)] text-right"
-                onClick={() => {
-                  setTab("forgot");
-                  setErrors({});
-                }}
+                className="text-xs text-[var(--accent)] text-right w-full"
+                onClick={() => setTab("forgot")}
               >
                 Forgot password?
               </button>
@@ -202,30 +232,60 @@ export default function AuthPage() {
                 onClick={handleLogin}
                 text="Login"
               />
+
+              <div className="text-center text-sm text-[var(--muted)]">
+                Don’t have an account?{" "}
+                <button
+                  onClick={() => setTab("register")}
+                  className="text-[var(--accent)] font-semibold hover:underline"
+                >
+                  Register
+                </button>
+              </div>
             </>
           )}
 
           {/* REGISTER */}
           {tab === "register" && (
             <>
-              <Input icon={<FiUser />} placeholder="Full Name"
+              <Input
+                icon={<FiUser />}
+                placeholder="Full Name"
                 value={regData.name}
-                onChange={(v: string) => setRegData({ ...regData, name: v })}
+                onChange={(v: string) =>
+                  setRegData({ ...regData, name: v })
+                }
                 error={errors.name}
               />
-              <Input icon={<FiMail />} placeholder="Gmail"
+
+              <Input
+                icon={<FiMail />}
+                placeholder="Gmail"
                 value={regData.email}
-                onChange={(v: string) => setRegData({ ...regData, email: v })}
+                onChange={(v: string) =>
+                  setRegData({ ...regData, email: v })
+                }
                 error={errors.email}
               />
-              <Input icon={<FiPhone />} placeholder="Phone"
+
+              <Input
+                icon={<FiPhone />}
+                placeholder="Phone"
                 value={regData.phone}
-                onChange={(v: string) => setRegData({ ...regData, phone: v })}
+                onChange={(v: string) =>
+                  setRegData({ ...regData, phone: v })
+                }
                 error={errors.phone}
               />
-              <Input icon={<FiLock />} type="password" placeholder="Password"
+
+              <Input
+                icon={<FiLock />}
+                type="password"
+                placeholder="Password"
                 value={regData.password}
-                onChange={(v: string) => setRegData({ ...regData, password: v })}
+                onChange={(v: string) =>
+                  setRegData({ ...regData, password: v })
+                }
                 error={errors.password}
               />
 
@@ -234,6 +294,16 @@ export default function AuthPage() {
                 onClick={handleRegister}
                 text="Create Account"
               />
+
+              <div className="text-center text-sm text-[var(--muted)]">
+                Already have an account?{" "}
+                <button
+                  onClick={() => setTab("login")}
+                  className="text-[var(--accent)] font-semibold hover:underline"
+                >
+                  Login
+                </button>
+              </div>
             </>
           )}
 
@@ -251,6 +321,7 @@ export default function AuthPage() {
                     }
                     error={errors.email}
                   />
+
                   <PrimaryButton
                     loading={loading}
                     onClick={sendOtp}
@@ -270,6 +341,7 @@ export default function AuthPage() {
                     }
                     error={errors.otp}
                   />
+
                   <Input
                     icon={<FiLock />}
                     type="password"
@@ -280,6 +352,7 @@ export default function AuthPage() {
                     }
                     error={errors.newPassword}
                   />
+
                   <PrimaryButton
                     loading={loading}
                     onClick={resetPassword}
@@ -300,8 +373,14 @@ export default function AuthPage() {
 function Input({ icon, error, onChange, ...props }: any) {
   return (
     <div>
-      <div className={`flex items-center gap-3 rounded-lg border px-3 py-3
-        ${error ? "border-red-500" : "border-[var(--border)] focus-within:border-[var(--accent)]"}`}>
+      <div
+        className={`flex items-center gap-3 rounded-lg border px-3 py-3
+        ${
+          error
+            ? "border-red-500"
+            : "border-[var(--border)] focus-within:border-[var(--accent)]"
+        }`}
+      >
         <span className="text-[var(--muted)]">{icon}</span>
         <input
           {...props}
@@ -319,8 +398,7 @@ function PrimaryButton({ text, loading, ...props }: any) {
     <button
       {...props}
       disabled={loading}
-      className="w-full mt-2 rounded-lg bg-[var(--accent)] py-3 font-semibold text-white
-      disabled:opacity-60"
+      className="w-full mt-2 rounded-lg bg-[var(--accent)] py-3 font-semibold text-white disabled:opacity-60"
     >
       {loading ? "Please wait..." : text}
     </button>
