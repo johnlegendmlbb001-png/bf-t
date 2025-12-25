@@ -9,11 +9,15 @@ const UserSchema = new mongoose.Schema(
     password: String,
     wallet: { type: Number, default: 0 },
     order: { type: Number, default: 0 },
-       userType: {
+    userType: {
       type: String,
       enum: ["user", "admin", "owner"],
       default: "user",
     },
+      // 🔐 Forget password fields
+  resetOtp: String,
+  resetOtpExpiry: Date,
+
   },
   { timestamps: true }
 );

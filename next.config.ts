@@ -20,6 +20,9 @@ const nextConfig = {
 
   },
 
+    serverExternalPackages: ["nodemailer"],
+
+
    experimental: {
     serverActions: {
       bodySizeLimit: '100mb', // increase global body size limit

@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import Order from "@/models/Order";
+import { sendPurchaseMail } from "@/lib/sendPurchaseMail";
+import User from "@/models/User";
+
 
 export async function POST(req: Request) {
   const startTime = Date.now();
@@ -204,15 +207,40 @@ export async function POST(req: Request) {
 
     order.externalResponse = gameData;
 
-    if (topupSuccess) {
-      console.log("🏁 [ORDER] Topup SUCCESS:", orderId);
-      order.topupStatus = "success";
-      order.status = "success";
+if (topupSuccess) {
+  console.log("🏁 [ORDER] Topup SUCCESS:", orderId);
+
+  order.topupStatus = "success";
+  order.status = "success";
+  await order.save();
+
+  // ----------------------------------
+  // 📧 SEND THANK YOU EMAIL (NON-BLOCKING)
+  // ----------------------------------
+  try {
+    const user = await User.findOne({ userId: order.userId });
+
+    if (user?.email) {
+      await sendPurchaseMail({
+        to: user.email,
+        name: user.name || "Customer",
+        orderId: order.orderId,
+      });
+
+      console.log("📧 [MAIL] Purchase mail sent to", user.email);
     } else {
-      console.warn("🟥 [ORDER] Topup FAILED:", orderId);
-      order.topupStatus = "failed";
-      order.status = "failed";
+      console.warn("📧 [MAIL] User email not found");
     }
+  } catch (mailErr) {
+    console.error("📧 [MAIL] Failed to send email:", mailErr);
+    // ❗ Do NOT fail the order because email failed
+  }
+} else {
+  console.warn("🟥 [ORDER] Topup FAILED:", orderId);
+  order.topupStatus = "failed";
+  order.status = "failed";
+}
+
 
     await order.save();
 
