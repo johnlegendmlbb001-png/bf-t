@@ -6,6 +6,7 @@ import Link from "next/link";
 import { FiFilter, FiX, FiSearch, FiGrid, FiList } from 'react-icons/fi';
 import GameGrid from "@/components/Games/GameGrid";
 import GameList from "@/components/Games/GameList";
+import FilterModal from "@/components/Games/FilterModal";
 
 import logo from "@/public/logo.png";
 

@@ -19,7 +19,8 @@ const FOOTER_LINKS = [
       { label: "Home", href: "/" },
       { label: "Games", href: "/games" },
       { label: "Services", href: "/services" },
-      { label: "Region", href: "/region" },
+      { label: "Region Check", href: "/region" },
+      { label: "Blog", href: "/blog" },
     ],
   },
   {

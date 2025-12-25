@@ -1,7 +1,6 @@
 "use client";
 
 import { FiX } from "react-icons/fi";
-import FilterModal from "@/components/Games/FilterModal";
 
 export default function FilterModal({
   open,
