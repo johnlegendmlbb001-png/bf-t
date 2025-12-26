@@ -97,7 +97,7 @@ const isBGMI =
     });
 
      const isBGMI =
-    game?.gameName?.toLowerCase() === "pubg mobile";
+    game?.gameName?.toLowerCase() === "pubg mobile" || game?.gameName?.toLowerCase() === "bgmi";
 
   const basePath = isBGMI
     ? `/games/pubg/${slug}/buy`
