@@ -60,7 +60,6 @@ export default function ReviewAndPaymentStep({
         itemSlug,
         itemName,
         playerId: reviewData.playerId, // ✅ Character ID
-        zoneId: "",                     // ✅ BGMI has no zone
         paymentMethod,
         price: totalPrice,
         email: userEmail || null,

@@ -256,6 +256,163 @@ html[data-theme="plasma"] {
   --border: #312e81;
   --card: #12002e;
 }
+/* ================= MANLY / STRONG THEMES ================= */
+
+/* 🔩 Steel Gray */
+html[data-theme="steel"] {
+  --background: #0f172a;
+  --foreground: #e5e7eb;
+  --accent: #94a3b8;
+  --accent-hover: #64748b;
+  --muted: #cbd5f5;
+  --border: #1e293b;
+  --card: #020617;
+}
+
+/* 🛠️ Gunmetal */
+html[data-theme="gunmetal"] {
+  --background: #09090b;
+  --foreground: #e4e4e7;
+  --accent: #71717a;
+  --accent-hover: #52525b;
+  --muted: #a1a1aa;
+  --border: #18181b;
+  --card: #0f0f12;
+}
+
+/* 🖤 Midnight Black */
+html[data-theme="midnightblack"] {
+  --background: #000000;
+  --foreground: #fafafa;
+  --accent: #3f3f46;
+  --accent-hover: #27272a;
+  --muted: #71717a;
+  --border: #18181b;
+  --card: #09090b;
+}
+
+/* 👑 Royal Blue */
+html[data-theme="royalblue"] {
+  --background: #020617;
+  --foreground: #e0e7ff;
+  --accent: #4338ca;
+  --accent-hover: #3730a3;
+  --muted: #a5b4fc;
+  --border: #1e1b4b;
+  --card: #0b0f3f;
+}
+
+/* 🩸 Blood Iron */
+html[data-theme="bloodiron"] {
+  --background: #0a0000;
+  --foreground: #fee2e2;
+  --accent: #991b1b;
+  --accent-hover: #7f1d1d;
+  --muted: #fca5a5;
+  --border: #450a0a;
+  --card: #140000;
+}
+
+/* ⚔️ War Zone */
+html[data-theme="warzone"] {
+  --background: #0b0b0b;
+  --foreground: #fefce8;
+  --accent: #f97316;
+  --accent-hover: #ea580c;
+  --muted: #fdba74;
+  --border: #3f1d0b;
+  --card: #1c0a00;
+}
+
+/* 🏴 Carbon Fiber */
+html[data-theme="carbon"] {
+  --background: #050505;
+  --foreground: #e5e7eb;
+  --accent: #52525b;
+  --accent-hover: #3f3f46;
+  --muted: #a1a1aa;
+  --border: #18181b;
+  --card: #0a0a0a;
+}
+/* ================= GIRLY / CUTE THEMES ================= */
+
+/* 🌹 Rose Blush */
+html[data-theme="rose"] {
+  --background: #fff1f2;
+  --foreground: #3f0d1d;
+  --accent: #fb7185;
+  --accent-hover: #f43f5e;
+  --muted: #9f1239;
+  --border: #fecdd3;
+  --card: #ffe4e6;
+}
+
+/* 💜 Lavender Dream */
+html[data-theme="lavender"] {
+  --background: #f5f3ff;
+  --foreground: #2e1065;
+  --accent: #a78bfa;
+  --accent-hover: #8b5cf6;
+  --muted: #7c3aed;
+  --border: #ddd6fe;
+  --card: #ede9fe;
+}
+
+/* 🍑 Peach Glow */
+html[data-theme="peach"] {
+  --background: #fff7ed;
+  --foreground: #7c2d12;
+  --accent: #fb923c;
+  --accent-hover: #f97316;
+  --muted: #ea580c;
+  --border: #fed7aa;
+  --card: #ffedd5;
+}
+
+/* 🍬 Cotton Candy */
+html[data-theme="cotton"] {
+  --background: #fdf2f8;
+  --foreground: #831843;
+  --accent: #f472b6;
+  --accent-hover: #ec4899;
+  --muted: #db2777;
+  --border: #fbcfe8;
+  --card: #fce7f3;
+}
+
+/* 🎀 Bubblegum Pop */
+html[data-theme="bubblegum"] {
+  --background: #fff0f6;
+  --foreground: #701a75;
+  --accent: #e879f9;
+  --accent-hover: #d946ef;
+  --muted: #c026d3;
+  --border: #f5d0fe;
+  --card: #fae8ff;
+}
+
+/* 🍒 Cherry Kiss */
+html[data-theme="cherry"] {
+  --background: #fff1f2;
+  --foreground: #7f1d1d;
+  --accent: #ef4444;
+  --accent-hover: #dc2626;
+  --muted: #f87171;
+  --border: #fecaca;
+  --card: #fee2e2;
+}
+
+/* 🍦 Vanilla Cream */
+html[data-theme="vanilla"] {
+  --background: #fffbeb;
+  --foreground: #78350f;
+  --accent: #facc15;
+  --accent-hover: #eab308;
+  --muted: #ca8a04;
+  --border: #fde68a;
+  --card: #fef3c7;
+}
+
 
 /* ================= GLOBAL ================= */
 

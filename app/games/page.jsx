@@ -29,6 +29,8 @@ export default function GamesPage() {
     "Genshin Impact",
     "Honor Of Kings",
     "TEST 1",
+      "Wuthering of Waves",
+    "Where Winds Meet"
   ];
 
   const isOutOfStock = (name) => outOfStockGames.includes(name);
