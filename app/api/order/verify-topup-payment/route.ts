@@ -4,52 +4,35 @@ import Order from "@/models/Order";
 import { sendPurchaseMail } from "@/lib/sendPurchaseMail";
 import User from "@/models/User";
 
-
 export async function POST(req: Request) {
   const startTime = Date.now();
 
   try {
-    console.log("🔵 [VERIFY] Incoming request");
-
     await connectDB();
-    console.log("🟢 [DB] Connected");
 
     const { orderId } = await req.json();
 
-    console.log("🔍 [VERIFY] Order ID received:", orderId);
-
     if (!orderId) {
-      console.warn("🟠 [VERIFY] Missing orderId");
       return NextResponse.json({
         success: false,
         message: "Missing orderId",
       });
     }
 
-    // ----------------------------------
-    // FETCH LOCAL ORDER
-    // ----------------------------------
+    /* =====================================================
+       FETCH ORDER
+    ===================================================== */
     const order = await Order.findOne({ orderId });
 
-    console.log("📦 [ORDER] Fetched:", {
-      orderId: order?.orderId,
-      status: order?.status,
-      paymentStatus: order?.paymentStatus,
-      topupStatus: order?.topupStatus,
-      price: order?.price,
-    });
-
     if (!order) {
-      console.warn("🟥 [ORDER] Not found:", orderId);
       return NextResponse.json({
         success: false,
         message: "Order not found",
       });
     }
 
-    // Prevent duplicate processing
+    // Already completed → safe exit
     if (order.status === "success") {
-      console.info("🔁 [ORDER] Already processed:", orderId);
       return NextResponse.json({
         success: true,
         message: "Already processed",
@@ -57,43 +40,53 @@ export async function POST(req: Request) {
       });
     }
 
-    // ----------------------------------
-    // CHECK PAYMENT STATUS VIA GATEWAY
-    // ----------------------------------
-    console.log("🌐 [GATEWAY] Checking payment status");
+    /* =====================================================
+       EXPIRE CHECK
+    ===================================================== */
+    if (order.expiresAt && Date.now() > order.expiresAt.getTime()) {
+      order.status = "failed";
+      order.paymentStatus = "failed";
+      await order.save();
 
+      return NextResponse.json({
+        success: false,
+        message: "Order expired",
+      });
+    }
+
+    /* =====================================================
+       CHECK GATEWAY STATUS
+    ===================================================== */
     const formData = new URLSearchParams();
     formData.append("user_token", process.env.XTRA_USER_TOKEN!);
     formData.append("order_id", orderId);
 
-    const resp = await fetch("https://xtragateway.site/api/check-order-status", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: formData.toString(),
-    });
+    const resp = await fetch(
+      "https://xtragateway.site/api/check-order-status",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: formData.toString(),
+      }
+    );
 
     const data = await resp.json();
+    const txnStatus = data?.result?.txnStatus;
 
-    console.log("📨 [GATEWAY] Response:", {
-      status: data?.status,
-      txnStatus: data?.result?.txnStatus,
-      amount:
-        data?.result?.amount ||
-        data?.result?.txnAmount ||
-        data?.result?.orderAmount,
-    });
+    /* =====================================================
+       HANDLE PAYMENT STATES CORRECTLY
+    ===================================================== */
 
-    // ----------------------------------
-    // CHECK GATEWAY SUCCESS
-    // ----------------------------------
-    const isSuccess =
-      data?.status == true ||
-      data?.result?.txnStatus == "COMPLETED" ||
-      data?.result?.txnStatus == "SUCCESS";
+    // ⏳ Payment still processing
+    if (txnStatus === "PENDING") {
+      return NextResponse.json({
+        success: false,
+        message: "Payment pending, please wait",
+      });
+    }
 
-    if (!isSuccess) {
-      console.warn("🟥 [PAYMENT] Failed or pending");
-
+    // ❌ Payment failed
+    if (txnStatus !== "SUCCESS" && txnStatus !== "COMPLETED") {
       order.status = "failed";
       order.paymentStatus = "failed";
       order.gatewayResponse = data;
@@ -101,45 +94,20 @@ export async function POST(req: Request) {
 
       return NextResponse.json({
         success: false,
-        message: "Payment Failed or Pending",
+        message: "Payment failed",
       });
     }
 
-    // ----------------------------------
-    // 🔒 STRICT PRICE MATCH CHECK
-    // ----------------------------------
+    /* =====================================================
+       STRICT PRICE CHECK
+    ===================================================== */
     const paidAmount = Number(
       data?.result?.amount ||
       data?.result?.txnAmount ||
       data?.result?.orderAmount
     );
 
-    console.log("💰 [PAYMENT] Amount check", {
-      expected: order.price,
-      paid: paidAmount,
-    });
-
-    if (!paidAmount) {
-      console.error("🟥 [PAYMENT] Paid amount missing");
-
-      order.status = "failed";
-      order.paymentStatus = "failed";
-      order.gatewayResponse = data;
-      await order.save();
-
-      return NextResponse.json({
-        success: false,
-        message: "Unable to verify paid amount",
-      });
-    }
-
-    if (paidAmount !== Number(order.price)) {
-      console.error("🚨 [FRAUD] Price mismatch detected", {
-        orderId,
-        expected: order.price,
-        paid: paidAmount,
-      });
-
+    if (!paidAmount || paidAmount !== Number(order.price)) {
       order.status = "fraud";
       order.paymentStatus = "failed";
       order.topupStatus = "failed";
@@ -152,30 +120,24 @@ export async function POST(req: Request) {
       });
     }
 
-    // ----------------------------------
-    // PAYMENT VERIFIED
-    // ----------------------------------
-    console.log("✅ [PAYMENT] Verified successfully");
-
+    /* =====================================================
+       PAYMENT CONFIRMED
+    ===================================================== */
     order.paymentStatus = "success";
     order.gatewayResponse = data;
     await order.save();
 
-    // ----------------------------------
-    // PREPARE TOPUP PAYLOAD
-    // ----------------------------------
-    const externalPayload = {
-      playerId: String(order.playerId),
-      zoneId: String(order.zoneId),
-      productId: `${order.gameSlug}_${order.itemSlug}`,
-      currency: "USD",
-    };
+    /* =====================================================
+       TOPUP CALL (IDEMPOTENT VIA STATUS CHECK)
+    ===================================================== */
+    if (order.topupStatus === "success") {
+      return NextResponse.json({
+        success: true,
+        message: "Topup already completed",
+        topupResponse: order.externalResponse,
+      });
+    }
 
-    console.log("🎮 [TOPUP] Sending payload:", externalPayload);
-
-    // ----------------------------------
-    // CALL GAME API
-    // ----------------------------------
     const gameResp = await fetch(
       `${process.env.NEXT_PUBLIC_API_BASE}/api-service/order`,
       {
@@ -184,83 +146,61 @@ export async function POST(req: Request) {
           "Content-Type": "application/json",
           "x-api-key": process.env.API_SECRET_KEY!,
         },
-        body: JSON.stringify(externalPayload),
+        body: JSON.stringify({
+          playerId: String(order.playerId),
+          zoneId: String(order.zoneId),
+          productId: `${order.gameSlug}_${order.itemSlug}`,
+          currency: "USD",
+        }),
       }
     );
 
     const gameData = await gameResp.json();
+    order.externalResponse = gameData;
 
-    console.log("🎯 [TOPUP] Response:", {
-      ok: gameResp.ok,
-      status: gameData?.status,
-      success: gameData?.success,
-    });
-
-    // ----------------------------------
-    // SAVE TOPUP RESULT
-    // ----------------------------------
     const topupSuccess =
       gameResp.ok &&
       (gameData?.success === true ||
         gameData?.status === true ||
         gameData?.result?.status === "SUCCESS");
 
-    order.externalResponse = gameData;
+    if (topupSuccess) {
+      order.status = "success";
+      order.topupStatus = "success";
+      await order.save();
 
-if (topupSuccess) {
-  console.log("🏁 [ORDER] Topup SUCCESS:", orderId);
-
-  order.topupStatus = "success";
-  order.status = "success";
-  await order.save();
-
-  // ----------------------------------
-  // 📧 SEND THANK YOU EMAIL (NON-BLOCKING)
-  // ----------------------------------
-  try {
-    const user = await User.findOne({ userId: order.userId });
-
-    if (user?.email) {
-      await sendPurchaseMail({
-        to: user.email,
-        name: user.name || "Customer",
-        orderId: order.orderId,
-      });
-
-      console.log("📧 [MAIL] Purchase mail sent to", user.email);
+      // 📧 email (best-effort)
+      try {
+        const user = await User.findOne({ userId: order.userId });
+        if (user?.email) {
+          await sendPurchaseMail({
+            to: user.email,
+            name: user.name || "Customer",
+            orderId: order.orderId,
+          });
+        }
+      } catch {}
     } else {
-      console.warn("📧 [MAIL] User email not found");
+      order.status = "failed";
+      order.topupStatus = "failed";
+      await order.save();
     }
-  } catch (mailErr) {
-    console.error("📧 [MAIL] Failed to send email:", mailErr);
-    // ❗ Do NOT fail the order because email failed
-  }
-} else {
-  console.warn("🟥 [ORDER] Topup FAILED:", orderId);
-  order.topupStatus = "failed";
-  order.status = "failed";
-}
-
-
-    await order.save();
-
-    console.log(
-      `⏱️ [VERIFY] Completed in ${Date.now() - startTime}ms`
-    );
 
     return NextResponse.json({
-      success: true,
-      message: "Topup successful",
+      success: order.status === "success",
+      message:
+        order.status === "success"
+          ? "Topup successful"
+          : "Topup failed",
       topupResponse: gameData,
     });
   } catch (error: any) {
-    console.error("🔥 [VERIFY] Fatal error:", error);
+    console.error("VERIFY ERROR:", error);
 
     return NextResponse.json(
       {
         success: false,
         message: "Server error",
-        error: error.message,
       },
       { status: 500 }
     );
