@@ -95,6 +95,7 @@ const userId = localStorage.getItem("userId");
             <div className="grid grid-cols-2 gap-3 mt-2">
 
               <button
+              disabled
                 onClick={() => setMethod("upi")}
                 className={`p-3 rounded-xl border transition ${
                   method === "upi"
