@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
+import jwt from "jsonwebtoken";
 import { connectDB } from "@/lib/mongodb";
 import Order from "@/models/Order";
-import User from "@/models/User";
 import PricingConfig from "@/models/PricingConfig";
 import crypto from "crypto";
 
@@ -50,7 +50,7 @@ const OTTS: Record<string, OTTConfig> = {
 };
 
 /* =====================================================
-   PRICE RESOLVER (CRITICAL SECURITY)
+   PRICE RESOLVER
 ===================================================== */
 
 async function resolvePrice(
@@ -58,21 +58,21 @@ async function resolvePrice(
   itemSlug: string,
   userType: string
 ): Promise<number> {
-  // 1️⃣ MEMBERSHIPS
+  // MEMBERSHIPS
   if (MEMBERSHIPS[gameSlug]) {
     const price = MEMBERSHIPS[gameSlug].items[itemSlug];
     if (!price) throw new Error("Invalid membership item");
     return price;
   }
 
-  // 2️⃣ OTTS
+  // OTTS
   if (OTTS[gameSlug]) {
     const price = OTTS[gameSlug][itemSlug];
     if (!price) throw new Error("Invalid OTT item");
     return price;
   }
 
-  // 3️⃣ GAMES (API + PRICING CONFIG)
+  // GAMES
   const resp = await fetch(
     `${process.env.NEXT_PUBLIC_API_BASE}/game/${gameSlug}`,
     {
@@ -93,9 +93,8 @@ async function resolvePrice(
 
   let price = Number(baseItem.sellingPrice);
 
-  await connectDB();
-
   if (userType !== "owner") {
+    await connectDB();
     const pricingConfig = await PricingConfig.findOne({ userType }).lean();
 
     if (pricingConfig) {
@@ -110,9 +109,7 @@ async function resolvePrice(
         const slab = pricingConfig.slabs.find(
           (s: any) => price >= s.min && price < s.max
         );
-        if (slab) {
-          price = price * (1 + slab.percent / 100);
-        }
+        if (slab) price = price * (1 + slab.percent / 100);
       }
     }
   }
@@ -127,6 +124,34 @@ async function resolvePrice(
 export async function POST(req: Request) {
   try {
     await connectDB();
+
+    /* ---------- AUTH (JWT) ---------- */
+    const authHeader = req.headers.get("authorization");
+
+    if (!authHeader?.startsWith("Bearer ")) {
+      return NextResponse.json(
+        { success: false, message: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
+    let decoded: any;
+    try {
+      decoded = jwt.verify(
+        authHeader.split(" ")[1],
+        process.env.JWT_SECRET!
+      );
+    } catch {
+      return NextResponse.json(
+        { success: false, message: "Invalid token" },
+        { status: 401 }
+      );
+    }
+
+    const userId = decoded.userId || null;
+    const userType = decoded.userType || "user";
+
+    /* ---------- BODY ---------- */
     const body = await req.json();
 
     const {
@@ -138,11 +163,9 @@ export async function POST(req: Request) {
       paymentMethod,
       email,
       phone,
-      userId,
       currency = "INR",
     } = body;
 
-    /* ---------- VALIDATION ---------- */
     if (
       !gameSlug ||
       !itemSlug ||
@@ -163,14 +186,7 @@ export async function POST(req: Request) {
       });
     }
 
-    /* ---------- USER TYPE ---------- */
-    let userType = "user";
-    if (userId) {
-      const user = await User.findOne({ userId }).lean();
-      if (user?.userType) userType = user.userType;
-    }
-
-    /* ---------- 🔒 SERVER PRICE (THE FIX) ---------- */
+    /* ---------- SERVER PRICE ---------- */
     const price = await resolvePrice(gameSlug, itemSlug, userType);
 
     /* ---------- ORDER ID ---------- */
@@ -185,14 +201,14 @@ export async function POST(req: Request) {
     /* ---------- CREATE ORDER ---------- */
     const newOrder = await Order.create({
       orderId,
-      userId: userId || null,
+      userId,
       gameSlug,
       itemSlug,
       itemName,
       playerId,
       zoneId,
       paymentMethod,
-      price, // ✅ TRUSTED
+      price,
       email: email || null,
       phone: phone || null,
       currency,
@@ -202,25 +218,18 @@ export async function POST(req: Request) {
       expiresAt,
     });
 
-    if (userId) {
-      await User.findOneAndUpdate(
-        { userId },
-        { $inc: { order: 1 } }
-      );
-    }
-
     /* ---------- PAYMENT GATEWAY ---------- */
     const formData = new URLSearchParams();
     if (phone) formData.append("customer_mobile", phone);
     formData.append("user_token", process.env.XTRA_USER_TOKEN!);
-    formData.append("amount", String(price)); // 🔒 SAFE
+    formData.append("amount", String(price));
     formData.append("order_id", orderId);
     formData.append(
       "redirect_url",
       `${process.env.NEXT_PUBLIC_BASE_URLU}/payment/topup-complete`
     );
 
-    const resp = await fetch("https://xtragateway.site/api/create-order", {
+    const resp = await fetch("https://xyzpay.site/api/create-order", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: formData.toString(),

@@ -68,11 +68,14 @@ export default function ReviewAndPaymentStep({
         currency: "INR",
         zoneId: "N/A", // BGMI has no zone
       };
+const token = localStorage.getItem("token");
 
       const res = await fetch("/api/order/create-gateway-order", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(orderPayload),
+  headers: {
+        Authorization: `Bearer ${token}`,
+      },
+           body: JSON.stringify(orderPayload),
       });
 
       const data = await res.json();

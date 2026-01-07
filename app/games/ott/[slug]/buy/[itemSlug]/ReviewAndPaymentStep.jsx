@@ -61,18 +61,19 @@ export default function ReviewAndPaymentStep({
         itemName,
         playerId: reviewData.playerId, // ✅ Character ID
         paymentMethod,
-        price: totalPrice,
         email: userEmail || null,
         phone: storedPhone,
-        userId: userId || null,
         currency: "INR",
         zoneId: "N/A", // BGMI has no zone
       };
+const token = localStorage.getItem("token");
 
       const res = await fetch("/api/order/create-gateway-order", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(orderPayload),
+  headers: {
+        Authorization: `Bearer ${token}`,
+      },
+             body: JSON.stringify(orderPayload),
       });
 
       const data = await res.json();

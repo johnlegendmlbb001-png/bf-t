@@ -22,10 +22,14 @@ export default function TopupComplete() {
 
     async function verify() {
       try {
+                    const token = localStorage.getItem("token");
+
         const res = await fetch("/api/order/verify-topup-payment", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ orderId }),
+  headers: {
+        Authorization: `Bearer ${token}`,
+      },
+                 body: JSON.stringify({ orderId }),
         });
 
         const data = await res.json();
