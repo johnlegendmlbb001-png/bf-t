@@ -17,7 +17,7 @@ export default function BannersTab({ banners, onRefresh }) {
 
   const token =
     typeof window !== "undefined"
-      ? localStorage.getItem("token")
+      ? sessionStorage.getItem("token")
       : null;
 
   /* ================= ADD / UPDATE (UNCHANGED LOGIC) ================= */

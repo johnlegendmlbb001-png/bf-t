@@ -24,9 +24,9 @@ export default function BuyFlowPage() {
 
   /* ================= LOAD USER DATA ================= */
   useEffect(() => {
-    setUserEmail(localStorage.getItem("email") || "");
-    setUserPhone(localStorage.getItem("phone") || "");
-    setWalletBalance(Number(localStorage.getItem("walletBalance") || 0));
+    setUserEmail(sessionStorage.getItem("email") || "");
+    setUserPhone(sessionStorage.getItem("phone") || "");
+    setWalletBalance(Number(sessionStorage.getItem("walletBalance") || 0));
   }, []);
 
   /* ================= ITEM DATA ================= */

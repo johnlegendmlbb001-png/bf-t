@@ -49,8 +49,8 @@ const handleProceed = async () => {
   setIsRedirecting(true); // 🔑 start loading
 
   try {
-    const userId = localStorage.getItem("userId");
-    const storedPhone = userPhone || localStorage.getItem("phone");
+    const userId = sessionStorage.getItem("userId");
+    const storedPhone = userPhone || sessionStorage.getItem("phone");
 
     if (!storedPhone) {
       alert("Phone number missing. Please log in again.");
@@ -65,11 +65,13 @@ const handleProceed = async () => {
       playerId: reviewData.playerId,
       zoneId: reviewData.zoneId,
       paymentMethod,
+            price: totalPrice,
       email: userEmail || null,
       phone: storedPhone,
+      userId: userId || null,
       currency: "INR",
     };
-const token = localStorage.getItem("token");
+const token = sessionStorage.getItem("token");
 
     const res = await fetch("/api/order/create-gateway-order", {
       method: "POST",
@@ -87,7 +89,7 @@ const token = localStorage.getItem("token");
       return;
     }
 
-    localStorage.setItem("pending_topup_order", data.orderId);
+    sessionStorage.setItem("pending_topup_order", data.orderId);
 
     // 🚀 redirect
     window.location.href = data.paymentUrl;

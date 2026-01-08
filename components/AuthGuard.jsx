@@ -8,8 +8,8 @@ export default function AuthGuard({ children }) {
   const [allowed, setAllowed] = useState(false);
 
   useEffect(() => {
-    const email = localStorage.getItem("email");
-    const phone = localStorage.getItem("phone");
+    const email = sessionStorage.getItem("email");
+    const phone = sessionStorage.getItem("phone");
 
     // If neither email nor phone exist → redirect
     if (!email && !phone) {

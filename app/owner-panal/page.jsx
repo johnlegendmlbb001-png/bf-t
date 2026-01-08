@@ -75,7 +75,7 @@ export default function AdminPanalPage() {
 
   /* ================= FETCH USERS ================= */
   const fetchUsers = async () => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     const res = await fetch(
       `/api/admin/users?page=${page}&limit=${limit}&search=${search}`,
       { headers: { Authorization: `Bearer ${token}` } }
@@ -84,7 +84,7 @@ export default function AdminPanalPage() {
     setUsers(data.data || []);
   };
   const fetchBanners = async () => {
-  const token = localStorage.getItem("token");
+  const token = sessionStorage.getItem("token");
   const res = await fetch("/api/admin/banners/game-banners", {
     headers: { Authorization: `Bearer ${token}` },
   });
@@ -95,7 +95,7 @@ export default function AdminPanalPage() {
 
   /* ================= FETCH ORDERS ================= */
   const fetchOrders = async () => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     const res = await fetch(
       `/api/admin/orders?page=${page}&limit=${limit}&search=${search}`,
       { headers: { Authorization: `Bearer ${token}` } }
@@ -106,7 +106,7 @@ export default function AdminPanalPage() {
 
   /* ================= FETCH TRANSACTIONS ================= */
   const fetchTransactions = async () => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     const res = await fetch(
       `/api/admin/transactions?page=${page}&limit=${limit}&search=${search}`,
       { headers: { Authorization: `Bearer ${token}` } }
@@ -117,7 +117,7 @@ export default function AdminPanalPage() {
 
   /* ================= FETCH SUPPORT QUERIES ================= */
   const fetchQueries = async () => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     const res = await fetch(
       `/api/admin/support-queries?page=${page}&limit=${limit}&search=${search}`,
       { headers: { Authorization: `Bearer ${token}` } }
@@ -130,7 +130,7 @@ export default function AdminPanalPage() {
   const changeUserRole = async (userId, newUserType) => {
     try {
       setUpdatingUserId(userId);
-      const token = localStorage.getItem("token");
+      const token = sessionStorage.getItem("token");
 
       const res = await fetch("/api/admin/users/change-role", {
         method: "PATCH",
@@ -154,7 +154,7 @@ export default function AdminPanalPage() {
 
   /* ================= FETCH PRICING ================= */
   const fetchPricing = async (type) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     const res = await fetch(`/api/admin/pricing?userType=${type}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -174,7 +174,7 @@ export default function AdminPanalPage() {
   const savePricing = async () => {
     try {
       setSavingPricing(true);
-      const token = localStorage.getItem("token");
+      const token = sessionStorage.getItem("token");
 
       const res = await fetch("/api/admin/pricing", {
         method: "PATCH",
@@ -202,7 +202,7 @@ export default function AdminPanalPage() {
 
   /* ================= UPDATE ORDER STATUS ================= */
   const updateOrderStatus = async (orderId, status) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     const res = await fetch("/api/admin/orders", {
       method: "PATCH",
       headers: {
@@ -223,7 +223,7 @@ export default function AdminPanalPage() {
 
   /* ================= UPDATE QUERY STATUS ================= */
   const updateQueryStatus = async (id, status) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     const res = await fetch("/api/admin/support-queries/status", {
       method: "PATCH",
       headers: {

@@ -17,7 +17,7 @@ export default function AdminPanalPage() {
   const [activeTab, setActiveTab] = useState("silver");
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) {
       setLoading(false);
       return;

@@ -46,8 +46,8 @@ export default function ReviewAndPaymentStep({
     setIsRedirecting(true);
 
     try {
-      const userId = localStorage.getItem("userId");
-      const storedPhone = userPhone || localStorage.getItem("phone");
+      const userId = sessionStorage.getItem("userId");
+      const storedPhone = userPhone || sessionStorage.getItem("phone");
 
       if (!storedPhone) {
         alert("Phone number missing. Please log in again.");
@@ -68,7 +68,7 @@ export default function ReviewAndPaymentStep({
         currency: "INR",
         zoneId: "N/A", // BGMI has no zone
       };
-const token = localStorage.getItem("token");
+const token = sessionStorage.getItem("token");
 
       const res = await fetch("/api/order/create-gateway-order", {
         method: "POST",
@@ -86,7 +86,7 @@ const token = localStorage.getItem("token");
         return;
       }
 
-      localStorage.setItem("pending_topup_order", data.orderId);
+      sessionStorage.setItem("pending_topup_order", data.orderId);
 
       window.location.href = data.paymentUrl;
     } catch {

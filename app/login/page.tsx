@@ -70,11 +70,11 @@ export default function AuthPage() {
 
       if (!data.success) return setErrors({ user: data.message });
 
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("userName", data.user.name);
-      localStorage.setItem("email", data.user.email);
-      localStorage.setItem("phone", data.user.phone);
-      localStorage.setItem("userId", data.user.userId);
+      sessionStorage.setItem("token", data.token);
+      sessionStorage.setItem("userName", data.user.name);
+      sessionStorage.setItem("email", data.user.email);
+      sessionStorage.setItem("phone", data.user.phone);
+      sessionStorage.setItem("userId", data.user.userId);
 
       setSuccess("Login successful! Redirecting...");
       setTimeout(() => (window.location.href = "/"), 800);

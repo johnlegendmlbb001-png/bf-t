@@ -8,8 +8,8 @@ export default function PaymentComplete() {
   const [message, setMessage] = useState("Checking payment status...");
 
   useEffect(() => {
-    const orderId = localStorage.getItem("pending_order");
-    const userId = localStorage.getItem("userId");
+    const orderId = sessionStorage.getItem("pending_order");
+    const userId = sessionStorage.getItem("userId");
 
     if (!orderId) {
       setStatus("failed");
@@ -32,12 +32,12 @@ export default function PaymentComplete() {
           setMessage("Payment Successful!");
 
           // Update wallet balance
-          const oldBal = Number(localStorage.getItem("walletBalance") || "0");
+          const oldBal = Number(sessionStorage.getItem("walletBalance") || "0");
           const newBal = oldBal + Number(data.amount || 0);
-          localStorage.setItem("walletBalance", String(newBal));
+          sessionStorage.setItem("walletBalance", String(newBal));
 
           // Optional cleanup
-          localStorage.removeItem("pending_order");
+          sessionStorage.removeItem("pending_order");
         } else {
           setStatus("failed");
           setMessage("Payment failed or still pending");

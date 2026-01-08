@@ -12,7 +12,7 @@ export default function TopupComplete() {
   const [message, setMessage] = useState("Verifying payment...");
 
   useEffect(() => {
-    const orderId = localStorage.getItem("pending_topup_order");
+    const orderId = sessionStorage.getItem("pending_topup_order");
 
     if (!orderId) {
       setStatus("failed");
@@ -22,7 +22,7 @@ export default function TopupComplete() {
 
     async function verify() {
       try {
-                    const token = localStorage.getItem("token");
+                    const token = sessionStorage.getItem("token");
 
         const res = await fetch("/api/order/verify-topup-payment", {
           method: "POST",
@@ -39,7 +39,7 @@ export default function TopupComplete() {
           setMessage("Payment successful!");
 
           // Optional cleanup
-          localStorage.removeItem("pending_topup_order");
+          sessionStorage.removeItem("pending_topup_order");
         } else {
           setStatus("failed");
           setMessage("Payment failed or still pending");
