@@ -190,11 +190,10 @@ export async function POST(req: Request) {
     const price = await resolvePrice(gameSlug, itemSlug, userType);
 
     /* ---------- ORDER ID ---------- */
-    const orderId =
-      "TOPUP_" +
-      Date.now().toString(36) +
-      "_" +
-      crypto.randomBytes(8).toString("hex");
+  const orderId =
+  "TOPUP" +
+  Date.now().toString(36).toUpperCase() +
+  crypto.randomBytes(6).toString("hex").toUpperCase();
 
     const expiresAt = new Date(Date.now() + 30 * 60 * 1000);
 
@@ -224,12 +223,13 @@ export async function POST(req: Request) {
     formData.append("user_token", process.env.XTRA_USER_TOKEN!);
     formData.append("amount", String(price));
     formData.append("order_id", orderId);
+    console.log('orderId:', orderId);
     formData.append(
       "redirect_url",
       `${process.env.NEXT_PUBLIC_BASE_URLU}/payment/topup-complete`
     );
 
-    const resp = await fetch("https://xtragateway.site/api/create-order", {
+    const resp = await fetch("https://xyzpay.site/api/create-order", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: formData.toString(),
