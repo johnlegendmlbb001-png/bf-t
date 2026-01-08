@@ -1,7 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { FiChevronDown } from "react-icons/fi";
+import {
+  FiChevronDown,
+  FiCalendar,
+  FiDollarSign,
+
+  FiUser,
+  FiGrid,
+  FiCreditCard,
+  FiPackage,
+  FiHash,
+} from "react-icons/fi";
 
 type OrderType = {
   orderId: string;
@@ -37,83 +47,125 @@ export default function OrderItem({ order }: OrderItemProps) {
   };
 
   const getGameName = (slug: string) => {
-    if (slug.toLowerCase().includes("mlbb")) {
-      return "Mobile Legends";
-    }
+    if (slug.toLowerCase().includes("mlbb")) return "Mobile Legends";
     return slug;
   };
 
   return (
-    <div
-      onClick={() => setOpen(!open)}
-      className="p-5 rounded-2xl border border-[var(--border)] bg-[var(--card)] shadow-sm cursor-pointer transition-all hover:shadow-lg hover:border-[var(--accent)]/40 select-none"
-    >
-      {/* TOP SECTION */}
-      <div className="flex justify-between items-center">
-        <div>
- 
-          <p className="font-mono text-sm font-semibold">
-            {order.orderId}
-          </p>
+    <div className="rounded-2xl border border-[var(--border)]
+                    bg-[var(--card)] shadow-sm
+                    transition hover:shadow-md">
 
-          <p className="text-xs text-[var(--muted)] mt-2">
-            {new Date(order.createdAt).toLocaleString()}
-          </p>
+      {/* ================= HEADER ================= */}
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full p-4 flex justify-between items-start
+                   text-left focus:outline-none"
+      >
+        <div className="min-w-0 space-y-1">
+          {/* Order ID */}
+          <div className="flex items-center gap-2 text-xs font-mono font-semibold truncate">
+            <FiHash className="text-[var(--muted)]" />
+            <span className="break-all truncate max-w-[220px]">
+              {order.orderId}
+            </span>
+          </div>
 
-          <p className="text-xl font-semibold mt-1">
+          {/* Date */}
+          <div className="flex items-center gap-2 text-xs text-[var(--muted)]">
+            <FiCalendar />
+            {new Date(order.createdAt).toLocaleDateString()}
+          </div>
+
+          {/* Price */}
+          <div className="flex items-center gap-2 text-lg font-semibold">
             ₹{order.price}
-          </p>
+          </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 shrink-0">
           <span
-            className={`px-3 py-1 text-xs rounded-lg font-semibold ${getStatusStyle(
+            className={`px-3 py-1 text-xs rounded-full font-semibold ${getStatusStyle(
               finalStatus
             )}`}
           >
             {finalStatus.toUpperCase()}
           </span>
 
-          <div
+          <FiChevronDown
+            size={18}
             className={`transition-transform duration-300 ${
               open ? "rotate-180" : "rotate-0"
             }`}
-          >
-            <FiChevronDown size={20} />
-          </div>
+          />
         </div>
-      </div>
+      </button>
 
-      {/* EXPANDED CONTENT */}
+      {/* ================= EXPANDED CONTENT ================= */}
       <div
-        className={`overflow-hidden transition-all duration-300 ${
-          open ? "max-h-96 mt-4" : "max-h-0"
+        className={`grid transition-all duration-300 ease-in-out ${
+          open ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
         }`}
       >
-        <div className="pt-4 border-t border-[var(--border)] text-sm space-y-2">
-          <p>
-            <strong>Game:</strong> {getGameName(order.gameSlug)}
-          </p>
-          <p>
-            <strong>Player ID:</strong> {order.playerId}
-          </p>
-          <p>
-            <strong>Zone ID:</strong> {order.zoneId}
-          </p>
-          <p>
-            <strong>Payment Method:</strong> {order.paymentMethod.toUpperCase()}
-          </p>
+        <div className="overflow-hidden px-4 pb-4">
+          <div className="pt-4 border-t border-[var(--border)]
+                          space-y-3 text-sm">
 
-          <div className="p-3 rounded-xl bg-[var(--background)]/40 border border-[var(--border)] mt-2">
-            <p className="text-[var(--muted)] text-sm mb-1">
-              Item Details
-            </p>
-            <p className="font-medium">
-              {order.itemName}
-            </p>
+            <Info icon={<FiUser />} label="Game" value={getGameName(order.gameSlug)} />
+            <Info icon={<FiUser />} label="Player ID" value={order.playerId} mono />
+            <Info icon={<FiGrid />} label="Zone ID" value={order.zoneId} mono />
+            <Info
+              icon={<FiCreditCard />}
+              label="Payment"
+              value={order.paymentMethod.toUpperCase()}
+            />
+
+            {/* Item box */}
+            <div className="rounded-xl bg-[var(--background)]/50
+                            border border-[var(--border)] p-3">
+              <div className="flex items-center gap-2 text-xs text-[var(--muted)] mb-1">
+                <FiPackage />
+                Item
+              </div>
+              <p className="font-medium break-words">
+                {order.itemName}
+              </p>
+            </div>
+
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+/* ================= HELPER ================= */
+
+function Info({
+  icon,
+  label,
+  value,
+  mono,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+  mono?: boolean;
+}) {
+  return (
+    <div className="flex justify-between gap-4 min-w-0 items-center">
+      <div className="flex items-center gap-2 text-[var(--muted)]">
+        {icon}
+        <span>{label}</span>
+      </div>
+
+      <span
+        className={`${
+          mono ? "font-mono text-xs" : "font-medium"
+        } break-words text-right max-w-[60%]`}
+      >
+        {value}
+      </span>
     </div>
   );
 }
