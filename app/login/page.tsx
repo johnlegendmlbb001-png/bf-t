@@ -1,14 +1,20 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { FiMail, FiPhone, FiLock, FiUser, FiKey } from "react-icons/fi";
+import { useState } from "react";
+import {
+  FiMail,
+  FiPhone,
+  FiLock,
+  FiUser,
+  FiKey,
+} from "react-icons/fi";
 
-type Tab = "login" | "register" | "forgot";
-type Step = 1 | 2;
+type Tab = "login" | "register";
+type ForgotStep = 0 | 1 | 2;
 
 export default function AuthPage() {
   const [tab, setTab] = useState<Tab>("login");
-  const [step, setStep] = useState<Step>(1);
+  const [forgotStep, setForgotStep] = useState<ForgotStep>(0);
   const [loading, setLoading] = useState(false);
 
   const [errors, setErrors] = useState<any>({});
@@ -44,17 +50,9 @@ export default function AuthPage() {
     setSuccess("");
   };
 
-  useEffect(() => {
-    clearMessages();
-    if (tab !== "forgot") {
-      setStep(1);
-      setForgotData({ email: "", otp: "", newPassword: "" });
-    }
-  }, [tab]);
-
   /* ================= LOGIN ================= */
   const handleLogin = async () => {
-    let errs: any = {};
+    const errs: any = {};
     if (!loginData.user) errs.user = "Email or phone required";
     if (!loginData.password) errs.password = "Password required";
     if (Object.keys(errs).length) return setErrors(errs);
@@ -87,7 +85,7 @@ export default function AuthPage() {
 
   /* ================= REGISTER ================= */
   const handleRegister = async () => {
-    let errs: any = {};
+    const errs: any = {};
     if (!minLen(regData.name, 3)) errs.name = "Min 3 characters";
     if (!isGmail(regData.email)) errs.email = "Valid Gmail required";
     if (!isPhone(regData.phone)) errs.phone = "10 digit phone required";
@@ -135,14 +133,14 @@ export default function AuthPage() {
       if (!data.success) return setErrors({ email: data.message });
 
       setSuccess("OTP sent to your email");
-      setStep(2);
+      setForgotStep(2);
     } finally {
       setLoading(false);
     }
   };
 
   const resetPassword = async () => {
-    let errs: any = {};
+    const errs: any = {};
     if (!forgotData.otp) errs.otp = "OTP required";
     if (!minLen(forgotData.newPassword, 6))
       errs.newPassword = "Min 6 characters";
@@ -163,7 +161,8 @@ export default function AuthPage() {
       if (!data.success) return setErrors({ otp: data.message });
 
       setSuccess("Password reset successful. Please login.");
-      setTab("login");
+      setForgotStep(0);
+      setForgotData({ email: "", otp: "", newPassword: "" });
     } finally {
       setLoading(false);
     }
@@ -172,31 +171,36 @@ export default function AuthPage() {
   return (
     <section className="min-h-screen flex items-center justify-center px-4">
       <div className="w-full max-w-md rounded-2xl border bg-[var(--card)] shadow-xl">
+
         {/* Tabs */}
-        {tab !== "forgot" && (
-          <div className="grid grid-cols-2 text-sm font-semibold">
-            {["login", "register"].map((t) => (
-              <button
-                key={t}
-                onClick={() => setTab(t as Tab)}
-                className={`py-4 ${
-                  tab === t
-                    ? "border-b-2 border-[var(--accent)] text-[var(--accent)]"
-                    : "text-[var(--muted)]"
-                }`}
-              >
-                {t === "login" ? "Login" : "Register"}
-              </button>
-            ))}
-          </div>
-        )}
+        <div className="grid grid-cols-2 text-sm font-semibold">
+          {["login", "register"].map((t) => (
+            <button
+              key={t}
+              onClick={() => {
+                clearMessages();
+                setForgotStep(0);
+                setTab(t as Tab);
+              }}
+              className={`py-4 ${
+                tab === t
+                  ? "border-b-2 border-[var(--accent)] text-[var(--accent)]"
+                  : "text-[var(--muted)]"
+              }`}
+            >
+              {t === "login" ? "Login" : "Register"}
+            </button>
+          ))}
+        </div>
 
         <div className="p-6 space-y-4">
           {success && (
-            <div className="text-green-500 text-sm text-center">{success}</div>
+            <div className="text-green-500 text-sm text-center">
+              {success}
+            </div>
           )}
 
-          {/* LOGIN */}
+          {/* ================= LOGIN ================= */}
           {tab === "login" && (
             <>
               <Input
@@ -222,7 +226,7 @@ export default function AuthPage() {
 
               <button
                 className="text-xs text-[var(--accent)] text-right w-full"
-                onClick={() => setTab("forgot")}
+                onClick={() => setForgotStep(1)}
               >
                 Forgot password?
               </button>
@@ -242,10 +246,62 @@ export default function AuthPage() {
                   Register
                 </button>
               </div>
+
+              {/* ===== FORGOT FLOW ===== */}
+              {forgotStep === 1 && (
+                <>
+                  <Input
+                    icon={<FiMail />}
+                    placeholder="Registered Gmail"
+                    value={forgotData.email}
+                    onChange={(v: string) =>
+                      setForgotData({ ...forgotData, email: v })
+                    }
+                    error={errors.email}
+                  />
+                  <PrimaryButton
+                    loading={loading}
+                    onClick={sendOtp}
+                    text="Send OTP"
+                  />
+                </>
+              )}
+
+              {forgotStep === 2 && (
+                <>
+                  <Input
+                    icon={<FiKey />}
+                    placeholder="OTP"
+                    value={forgotData.otp}
+                    onChange={(v: string) =>
+                      setForgotData({ ...forgotData, otp: v })
+                    }
+                    error={errors.otp}
+                  />
+                  <Input
+                    icon={<FiLock />}
+                    type="password"
+                    placeholder="New Password"
+                    value={forgotData.newPassword}
+                    onChange={(v: string) =>
+                      setForgotData({
+                        ...forgotData,
+                        newPassword: v,
+                      })
+                    }
+                    error={errors.newPassword}
+                  />
+                  <PrimaryButton
+                    loading={loading}
+                    onClick={resetPassword}
+                    text="Reset Password"
+                  />
+                </>
+              )}
             </>
           )}
 
-          {/* REGISTER */}
+          {/* ================= REGISTER ================= */}
           {tab === "register" && (
             <>
               <Input
@@ -304,62 +360,6 @@ export default function AuthPage() {
                   Login
                 </button>
               </div>
-            </>
-          )}
-
-          {/* FORGOT PASSWORD */}
-          {tab === "forgot" && (
-            <>
-              {step === 1 && (
-                <>
-                  <Input
-                    icon={<FiMail />}
-                    placeholder="Registered Gmail"
-                    value={forgotData.email}
-                    onChange={(v: string) =>
-                      setForgotData({ ...forgotData, email: v })
-                    }
-                    error={errors.email}
-                  />
-
-                  <PrimaryButton
-                    loading={loading}
-                    onClick={sendOtp}
-                    text="Send OTP"
-                  />
-                </>
-              )}
-
-              {step === 2 && (
-                <>
-                  <Input
-                    icon={<FiKey />}
-                    placeholder="OTP"
-                    value={forgotData.otp}
-                    onChange={(v: string) =>
-                      setForgotData({ ...forgotData, otp: v })
-                    }
-                    error={errors.otp}
-                  />
-
-                  <Input
-                    icon={<FiLock />}
-                    type="password"
-                    placeholder="New Password"
-                    value={forgotData.newPassword}
-                    onChange={(v: string) =>
-                      setForgotData({ ...forgotData, newPassword: v })
-                    }
-                    error={errors.newPassword}
-                  />
-
-                  <PrimaryButton
-                    loading={loading}
-                    onClick={resetPassword}
-                    text="Reset Password"
-                  />
-                </>
-              )}
             </>
           )}
         </div>
