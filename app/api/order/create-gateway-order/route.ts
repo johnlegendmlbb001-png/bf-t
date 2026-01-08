@@ -28,24 +28,24 @@ const MEMBERSHIPS: Record<string, MembershipConfig> = {
   },
   "reseller-membership": {
     items: {
-      "reseller-1m": 199,
-      "reseller-3m": 699,
+      "reseller-1m": 99,
+      "reseller-3m": 299,
     },
   },
 };
 
 const OTTS: Record<string, OTTConfig> = {
   "youtube-premium": {
-    "yt-1m": 129,
-    "yt-3m": 349,
+    "yt-1m": 30,
+    "yt-3m": 90,
   },
   netflix: {
-    "nf-1m": 199,
-    "nf-3m": 549,
+    "nf-1m": 99,
+    "nf-3m": 249,
   },
   instagram: {
-    "ig-1k": 299,
-    "ig-5k": 1299,
+    "ig-1k": 249,
+    "ig-5k": 1099,
   },
 };
 
