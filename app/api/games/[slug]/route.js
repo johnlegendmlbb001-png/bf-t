@@ -20,7 +20,7 @@ const MEMBERSHIPS = {
     gameAvailablity: true,
     itemId: [
       {
-        itemName: "3 Month",
+        itemName: "1 Month",
         itemSlug: "silver-1m",
         sellingPrice: 99,
         dummyPrice: 299,
@@ -32,7 +32,7 @@ const MEMBERSHIPS = {
       },
     
       {
-        itemName: " 1 year",
+        itemName: " 3 month",
         itemSlug: "silver-3m",
         sellingPrice: 299,
         dummyPrice: 1099,
@@ -59,10 +59,10 @@ const MEMBERSHIPS = {
     gameAvailablity: true,
     itemId: [
       {
-        itemName: "3 Month",
+        itemName: "1 Month",
         itemSlug: "reseller-1m",
         sellingPrice: 99,
-        dummyPrice: 299,
+        dummyPrice: 499,
         itemAvailablity: true,
         index: 1,
           itemImageId: {
@@ -71,10 +71,10 @@ const MEMBERSHIPS = {
       },
   
       {
-        itemName: "1 Year",
+        itemName: "3 Month",
         itemSlug: "reseller-3m",
-        sellingPrice: 199,
-        dummyPrice: 1099,
+        sellingPrice: 299,
+        dummyPrice: 2099,
         itemAvailablity: true,
         index: 3,
           itemImageId: {
@@ -102,7 +102,7 @@ const OTTS = {
       {
         itemName: "1 Month",
         itemSlug: "yt-1m",
-        sellingPrice: 30,
+        sellingPrice: 129,
         dummyPrice: 199,
         itemAvailablity: true,
         index: 1,
@@ -113,7 +113,7 @@ const OTTS = {
       {
         itemName: "3 Months",
         itemSlug: "yt-3m",
-        sellingPrice: 90,
+        sellingPrice: 349,
         dummyPrice: 499,
         itemAvailablity: true,
         index: 2,
@@ -140,7 +140,7 @@ const OTTS = {
       {
         itemName: "1 Month",
         itemSlug: "nf-1m",
-        sellingPrice: 99,
+        sellingPrice: 199,
         dummyPrice: 299,
         itemAvailablity: true,
         index: 1,
@@ -151,7 +151,7 @@ const OTTS = {
       {
         itemName: "3 Months",
         itemSlug: "nf-3m",
-        sellingPrice: 249,
+        sellingPrice: 549,
         dummyPrice: 799,
         itemAvailablity: true,
         index: 2,
@@ -178,7 +178,7 @@ const OTTS = {
       {
         itemName: "1K Followers",
         itemSlug: "ig-1k",
-        sellingPrice: 249,
+        sellingPrice: 299,
         dummyPrice: 499,
         itemAvailablity: true,
         index: 1,
@@ -189,7 +189,7 @@ const OTTS = {
       {
         itemName: "5K Followers",
         itemSlug: "ig-5k",
-        sellingPrice: 1099,
+        sellingPrice: 1299,
         dummyPrice: 1999,
         itemAvailablity: true,
         index: 2,

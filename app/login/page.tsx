@@ -76,7 +76,7 @@ export default function AuthPage() {
       sessionStorage.setItem("phone", data.user.phone);
       sessionStorage.setItem("userId", data.user.userId);
 
-      setSuccess("Login successful! Redirecting...");
+      setSuccess("Login successful. Redirecting...");
       setTimeout(() => (window.location.href = "/"), 800);
     } finally {
       setLoading(false);
@@ -107,7 +107,7 @@ export default function AuthPage() {
 
       if (!data.success) return setErrors({ email: data.message });
 
-      setSuccess("Account created! Please login.");
+      setSuccess("Account created successfully. Please login.");
       setTab("login");
     } finally {
       setLoading(false);
@@ -169,11 +169,11 @@ export default function AuthPage() {
   };
 
   return (
-    <section className="min-h-screen flex items-center justify-center px-4">
-      <div className="w-full max-w-md rounded-2xl border bg-[var(--card)] shadow-xl">
+    <section className="min-h-screen flex items-center justify-center px-4 bg-gradient-to-br from-[var(--background)] to-black/20">
+      <div className="w-full max-w-md rounded-3xl border bg-[var(--card)] shadow-2xl">
 
         {/* Tabs */}
-        <div className="grid grid-cols-2 text-sm font-semibold">
+        <div className="grid grid-cols-2 text-sm font-semibold relative">
           {["login", "register"].map((t) => (
             <button
               key={t}
@@ -182,25 +182,43 @@ export default function AuthPage() {
                 setForgotStep(0);
                 setTab(t as Tab);
               }}
-              className={`py-4 ${
-                tab === t
-                  ? "border-b-2 border-[var(--accent)] text-[var(--accent)]"
-                  : "text-[var(--muted)]"
-              }`}
+              className={`py-4 transition-all duration-300 relative
+                ${
+                  tab === t
+                    ? "text-[var(--accent)]"
+                    : "text-[var(--muted)] hover:text-[var(--foreground)]"
+                }`}
             >
               {t === "login" ? "Login" : "Register"}
+              {tab === t && (
+                <span className="absolute left-6 right-6 bottom-0 h-[2px] bg-[var(--accent)] rounded-full" />
+              )}
             </button>
           ))}
         </div>
 
         <div className="p-6 space-y-4">
+
+          {/* Title */}
+          <div className="text-center mb-4">
+            <h1 className="text-2xl font-bold">
+              {tab === "login" ? "Welcome Back" : "Create Account"}
+            </h1>
+            <p className="text-sm text-[var(--muted)]">
+              {tab === "login"
+                ? "Login to continue"
+                : "Register in less than a minute"}
+            </p>
+          </div>
+
+          {/* Success */}
           {success && (
-            <div className="text-green-500 text-sm text-center">
+            <div className="rounded-lg bg-green-500/10 border border-green-500/30 px-4 py-2 text-sm text-green-500 text-center">
               {success}
             </div>
           )}
 
-          {/* ================= LOGIN ================= */}
+          {/* LOGIN */}
           {tab === "login" && (
             <>
               <Input
@@ -224,12 +242,14 @@ export default function AuthPage() {
                 error={errors.password}
               />
 
-              <button
-                className="text-xs text-[var(--accent)] text-right w-full"
-                onClick={() => setForgotStep(1)}
-              >
-                Forgot password?
-              </button>
+              <div className="flex justify-end">
+                <button
+                  className="text-xs text-[var(--accent)] hover:underline"
+                  onClick={() => setForgotStep(1)}
+                >
+                  Forgot password?
+                </button>
+              </div>
 
               <PrimaryButton
                 loading={loading}
@@ -237,17 +257,12 @@ export default function AuthPage() {
                 text="Login"
               />
 
-              <div className="text-center text-sm text-[var(--muted)]">
-                Don’t have an account?{" "}
-                <button
-                  onClick={() => setTab("register")}
-                  className="text-[var(--accent)] font-semibold hover:underline"
-                >
-                  Register
-                </button>
-              </div>
+              {forgotStep > 0 && (
+                <div className="text-xs text-center text-[var(--muted)]">
+                  Step {forgotStep === 1 ? "1 of 2" : "2 of 2"} – Reset Password
+                </div>
+              )}
 
-              {/* ===== FORGOT FLOW ===== */}
               {forgotStep === 1 && (
                 <>
                   <Input
@@ -301,7 +316,7 @@ export default function AuthPage() {
             </>
           )}
 
-          {/* ================= REGISTER ================= */}
+          {/* REGISTER */}
           {tab === "register" && (
             <>
               <Input
@@ -350,16 +365,6 @@ export default function AuthPage() {
                 onClick={handleRegister}
                 text="Create Account"
               />
-
-              <div className="text-center text-sm text-[var(--muted)]">
-                Already have an account?{" "}
-                <button
-                  onClick={() => setTab("login")}
-                  className="text-[var(--accent)] font-semibold hover:underline"
-                >
-                  Login
-                </button>
-              </div>
             </>
           )}
         </div>
@@ -372,23 +377,27 @@ export default function AuthPage() {
 
 function Input({ icon, error, onChange, ...props }: any) {
   return (
-    <div>
+    <div className="space-y-1">
       <div
-        className={`flex items-center gap-3 rounded-lg border px-3 py-3
+        className={`group flex items-center gap-3 rounded-xl border px-4 py-3 transition
         ${
           error
             ? "border-red-500"
-            : "border-[var(--border)] focus-within:border-[var(--accent)]"
+            : "border-[var(--border)] focus-within:border-[var(--accent)] focus-within:ring-2 focus-within:ring-[var(--accent)]/20"
         }`}
       >
-        <span className="text-[var(--muted)]">{icon}</span>
+        <span className="text-[var(--muted)] group-focus-within:text-[var(--accent)] transition">
+          {icon}
+        </span>
         <input
           {...props}
           onChange={(e) => onChange(e.target.value)}
-          className="w-full bg-transparent outline-none text-sm"
+          className="w-full bg-transparent outline-none text-sm placeholder:text-[var(--muted)]"
         />
       </div>
-      {error && <p className="text-xs text-red-500 mt-1">{error}</p>}
+      {error && (
+        <p className="text-xs text-red-500 pl-1">{error}</p>
+      )}
     </div>
   );
 }
@@ -398,9 +407,17 @@ function PrimaryButton({ text, loading, ...props }: any) {
     <button
       {...props}
       disabled={loading}
-      className="w-full mt-2 rounded-lg bg-[var(--accent)] py-3 font-semibold text-white disabled:opacity-60"
+      className="w-full mt-4 rounded-xl bg-[var(--accent)] py-3 font-semibold text-white
+      transition active:scale-[0.98] hover:brightness-110 disabled:opacity-60"
     >
-      {loading ? "Please wait..." : text}
+      {loading ? (
+        <span className="flex justify-center items-center gap-2">
+          <span className="h-4 w-4 rounded-full border-2 border-white border-t-transparent animate-spin" />
+          Processing
+        </span>
+      ) : (
+        text
+      )}
     </button>
   );
 }
