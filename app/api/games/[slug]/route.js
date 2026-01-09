@@ -209,16 +209,20 @@ const OTTS = {
   },
 };
 
-/* ================= HELPERS ================= */
-const normalizePricingRole = (role) =>
-  role === "member" ? "admin" : role;
+/* ================= ROLE → PRICING ================= */
+const resolvePricingRole = (role) => {
+  if (role === "member") return "admin";
+  if (role === "admin") return "admin";
+  if (role === "user") return "user";
+  return null; // owner → base price
+};
 
 /* ================= API ================= */
 export async function GET(req, { params }) {
   const { slug } = await params;
 
   try {
-    /* ===== SHORT-CIRCUIT STATIC PRODUCTS ===== */
+    /* ===== STATIC PRODUCTS ===== */
     if (OTTS[slug]) {
       return NextResponse.json({
         success: true,
@@ -233,7 +237,7 @@ export async function GET(req, { params }) {
       });
     }
 
-    /* ===== OPTIONAL JWT ===== */
+    /* ===== OPTIONAL AUTH ===== */
     let userType = "user";
     const auth = req.headers.get("authorization");
 
@@ -247,69 +251,58 @@ export async function GET(req, { params }) {
       } catch {}
     }
 
-    const pricingUserType = normalizePricingRole(userType);
+    const pricingRole = resolvePricingRole(userType);
 
     /* ===== FETCH BASE GAME ===== */
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_BASE}/game/${slug}`,
       {
-        headers: {
-          "x-api-key": process.env.API_SECRET_KEY,
-        },
+        headers: { "x-api-key": process.env.API_SECRET_KEY },
       }
     );
 
     const data = await response.json();
     if (!data?.data?.itemId) return NextResponse.json(data);
 
-    /* ===== DB PRICING ===== */
+    /* ===== FETCH PRICING ===== */
     await connectDB();
 
     let pricingConfig = null;
-    if (!["owner", "user"].includes(pricingUserType)) {
+    if (pricingRole) {
       pricingConfig = await PricingConfig.findOne({
-        userType: pricingUserType,
+        userType: pricingRole,
       }).lean();
     }
 
     /* ===== APPLY PRICING ===== */
     const gameSlug = data.data.gameSlug;
 
-    data.data.itemId = data.data.itemId
-      .filter((item) => {
-        if (data.data.gameName === "MLBB SMALL/PHP") {
-          const price = Number(item.sellingPrice);
-          if (item.itemName === "Weekly Pass") return false;
-          if (price > 170) return false;
-        }
-        return true;
-      })
-      .map((item) => {
-        const basePrice = Number(item.sellingPrice);
-        let finalPrice = basePrice;
+    data.data.itemId = data.data.itemId.map((item) => {
+      const basePrice = Number(item.sellingPrice);
+      let finalPrice = basePrice;
 
-        const override = pricingConfig?.overrides?.find(
-          (o) =>
-            o.gameSlug === gameSlug &&
-            o.itemSlug === item.itemSlug
+      const override = pricingConfig?.overrides?.find(
+        (o) =>
+          o.gameSlug === gameSlug &&
+          o.itemSlug === item.itemSlug
+      );
+
+      if (override?.fixedPrice != null) {
+        finalPrice = override.fixedPrice;
+      } else {
+        const slab = pricingConfig?.slabs?.find(
+          (s) => basePrice >= s.min && basePrice < s.max
         );
-
-        if (override?.fixedPrice != null) {
-          finalPrice = override.fixedPrice;
-        } else {
-          const slab = pricingConfig?.slabs?.find(
-            (s) => basePrice >= s.min && basePrice < s.max
-          );
-          if (slab) {
-            finalPrice = basePrice * (1 + slab.percent / 100);
-          }
+        if (slab) {
+          finalPrice = basePrice * (1 + slab.percent / 100);
         }
+      }
 
-        return {
-          ...item,
-          sellingPrice: Math.ceil(finalPrice),
-        };
-      });
+      return {
+        ...item,
+        sellingPrice: Math.ceil(finalPrice),
+      };
+    });
 
     return NextResponse.json(data);
   } catch (err) {
