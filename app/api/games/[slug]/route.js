@@ -3,7 +3,6 @@ import jwt from "jsonwebtoken";
 import { connectDB } from "@/lib/mongodb";
 import PricingConfig from "@/models/PricingConfig";
 
-/* ================= OTT CONFIG ================= */
 /* ================= MEMBERSHIP CONFIG ================= */
 const MEMBERSHIPS = {
   "silver-membership": {
@@ -26,21 +25,22 @@ const MEMBERSHIPS = {
         dummyPrice: 299,
         itemAvailablity: true,
         index: 1,
-          itemImageId: {
-                    image: "https://res.cloudinary.com/dk0sslz1q/image/upload/v1767096434/rs_klee62.png"
-                },
+        itemImageId: {
+          image:
+            "https://res.cloudinary.com/dk0sslz1q/image/upload/v1767096434/rs_klee62.png",
+        },
       },
-    
       {
-        itemName: " 3 month",
+        itemName: "3 Month",
         itemSlug: "silver-3m",
         sellingPrice: 299,
         dummyPrice: 1099,
         itemAvailablity: true,
         index: 3,
-          itemImageId: {
-                    image: "https://res.cloudinary.com/dk0sslz1q/image/upload/v1767096434/rs_klee62.png"
-                },
+        itemImageId: {
+          image:
+            "https://res.cloudinary.com/dk0sslz1q/image/upload/v1767096434/rs_klee62.png",
+        },
       },
     ],
   },
@@ -62,29 +62,31 @@ const MEMBERSHIPS = {
         itemName: "1 Month",
         itemSlug: "reseller-1m",
         sellingPrice: 99,
-        dummyPrice: 499,
+        dummyPrice: 299,
         itemAvailablity: true,
         index: 1,
-          itemImageId: {
-                    image: "https://res.cloudinary.com/dk0sslz1q/image/upload/v1767096434/sew_zcz775.png"
-                },
+        itemImageId: {
+          image:
+            "https://res.cloudinary.com/dk0sslz1q/image/upload/v1767096434/sew_zcz775.png",
+        },
       },
-  
       {
         itemName: "3 Month",
         itemSlug: "reseller-3m",
         sellingPrice: 299,
-        dummyPrice: 2099,
+        dummyPrice: 1099,
         itemAvailablity: true,
         index: 3,
-          itemImageId: {
-                    image: "https://res.cloudinary.com/dk0sslz1q/image/upload/v1767096434/sew_zcz775.png"
-                },
+        itemImageId: {
+          image:
+            "https://res.cloudinary.com/dk0sslz1q/image/upload/v1767096434/sew_zcz775.png",
+        },
       },
     ],
   },
 };
 
+/* ================= OTT CONFIG ================= */
 const OTTS = {
   "youtube-premium": {
     gameName: "YouTube Premium",
@@ -102,24 +104,26 @@ const OTTS = {
       {
         itemName: "1 Month",
         itemSlug: "yt-1m",
-        sellingPrice: 129,
+        sellingPrice: 30,
         dummyPrice: 199,
         itemAvailablity: true,
         index: 1,
-         itemImageId: {
-                    image: "https://res.cloudinary.com/dk0sslz1q/image/upload/v1767027180/aa_avjoox.jpg"
-                },
+        itemImageId: {
+          image:
+            "https://res.cloudinary.com/dk0sslz1q/image/upload/v1767027180/aa_avjoox.jpg",
+        },
       },
       {
         itemName: "3 Months",
         itemSlug: "yt-3m",
-        sellingPrice: 349,
+        sellingPrice: 90,
         dummyPrice: 499,
         itemAvailablity: true,
         index: 2,
-              itemImageId: {
-                    image: "https://res.cloudinary.com/dk0sslz1q/image/upload/v1767027180/aa_avjoox.jpg"
-                },
+        itemImageId: {
+          image:
+            "https://res.cloudinary.com/dk0sslz1q/image/upload/v1767027180/aa_avjoox.jpg",
+        },
       },
     ],
   },
@@ -140,24 +144,26 @@ const OTTS = {
       {
         itemName: "1 Month",
         itemSlug: "nf-1m",
-        sellingPrice: 199,
+        sellingPrice: 99,
         dummyPrice: 299,
         itemAvailablity: true,
         index: 1,
-              itemImageId: {
-                    image: "https://res.cloudinary.com/dk0sslz1q/image/upload/v1767027180/s_d5mln0.jpg"
-                },
+        itemImageId: {
+          image:
+            "https://res.cloudinary.com/dk0sslz1q/image/upload/v1767027180/s_d5mln0.jpg",
+        },
       },
       {
         itemName: "3 Months",
         itemSlug: "nf-3m",
-        sellingPrice: 549,
+        sellingPrice: 249,
         dummyPrice: 799,
         itemAvailablity: true,
         index: 2,
-          itemImageId: {
-                    image: "https://res.cloudinary.com/dk0sslz1q/image/upload/v1767027180/s_d5mln0.jpg"
-                },
+        itemImageId: {
+          image:
+            "https://res.cloudinary.com/dk0sslz1q/image/upload/v1767027180/s_d5mln0.jpg",
+        },
       },
     ],
   },
@@ -178,74 +184,72 @@ const OTTS = {
       {
         itemName: "1K Followers",
         itemSlug: "ig-1k",
-        sellingPrice: 299,
+        sellingPrice: 249,
         dummyPrice: 499,
         itemAvailablity: true,
         index: 1,
-          itemImageId: {
-                    image: "https://res.cloudinary.com/dk0sslz1q/image/upload/v1767027180/a_jnlvg0.jpg"
-                },
+        itemImageId: {
+          image:
+            "https://res.cloudinary.com/dk0sslz1q/image/upload/v1767027180/a_jnlvg0.jpg",
+        },
       },
       {
         itemName: "5K Followers",
         itemSlug: "ig-5k",
-        sellingPrice: 1299,
+        sellingPrice: 1099,
         dummyPrice: 1999,
         itemAvailablity: true,
         index: 2,
-            itemImageId: {
-                    image: "https://res.cloudinary.com/dk0sslz1q/image/upload/v1767027180/a_jnlvg0.jpg"
-                },
+        itemImageId: {
+          image:
+            "https://res.cloudinary.com/dk0sslz1q/image/upload/v1767027180/a_jnlvg0.jpg",
+        },
       },
     ],
   },
 };
 
+/* ================= HELPERS ================= */
+const normalizePricingRole = (role) =>
+  role === "member" ? "admin" : role;
+
 /* ================= API ================= */
 export async function GET(req, { params }) {
-  const { slug } =  await params;
+  const { slug } = await params;
 
   try {
-    /* ================= OTT SHORT-CIRCUIT ================= */
+    /* ===== SHORT-CIRCUIT STATIC PRODUCTS ===== */
     if (OTTS[slug]) {
       return NextResponse.json({
-        statusCode: 200,
         success: true,
-        message: "OTT",
-        data: {
-          gameSlug: slug,
-          gameLink: "",
-          ...OTTS[slug],
-        },
+        data: { gameSlug: slug, ...OTTS[slug] },
       });
     }
+
     if (MEMBERSHIPS[slug]) {
-  return NextResponse.json({
-    statusCode: 200,
-    success: true,
-    message: "MEMBERSHIP",
-    data: {
-      gameSlug: slug,
-      gameLink: "",
-      ...MEMBERSHIPS[slug],
-    },
-  });
-}
+      return NextResponse.json({
+        success: true,
+        data: { gameSlug: slug, ...MEMBERSHIPS[slug] },
+      });
+    }
 
-
-    /* ================= OPTIONAL JWT ================= */
+    /* ===== OPTIONAL JWT ===== */
     let userType = "user";
-    const authHeader = req.headers.get("authorization");
+    const auth = req.headers.get("authorization");
 
-    if (authHeader?.startsWith("Bearer ")) {
+    if (auth?.startsWith("Bearer ")) {
       try {
-        const token = authHeader.split(" ")[1];
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const decoded = jwt.verify(
+          auth.split(" ")[1],
+          process.env.JWT_SECRET
+        );
         if (decoded?.userType) userType = decoded.userType;
       } catch {}
     }
 
-    /* ================= FETCH GAME ================= */
+    const pricingUserType = normalizePricingRole(userType);
+
+    /* ===== FETCH BASE GAME ===== */
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_BASE}/game/${slug}`,
       {
@@ -256,24 +260,22 @@ export async function GET(req, { params }) {
     );
 
     const data = await response.json();
+    if (!data?.data?.itemId) return NextResponse.json(data);
 
-    if (!data?.data?.itemId) {
-      return NextResponse.json(data);
-    }
-
-    /* ================= DB PRICING ================= */
+    /* ===== DB PRICING ===== */
     await connectDB();
 
     let pricingConfig = null;
-    if (userType !== "owner") {
-      pricingConfig = await PricingConfig.findOne({ userType }).lean();
+    if (!["owner", "user"].includes(pricingUserType)) {
+      pricingConfig = await PricingConfig.findOne({
+        userType: pricingUserType,
+      }).lean();
     }
 
+    /* ===== APPLY PRICING ===== */
     const gameSlug = data.data.gameSlug;
 
-    /* ================= APPLY PRICING ================= */
     data.data.itemId = data.data.itemId
-      // MLBB SMALL/PHP rule
       .filter((item) => {
         if (data.data.gameName === "MLBB SMALL/PHP") {
           const price = Number(item.sellingPrice);
@@ -286,16 +288,16 @@ export async function GET(req, { params }) {
         const basePrice = Number(item.sellingPrice);
         let finalPrice = basePrice;
 
-        const fixedOverride = pricingConfig?.overrides?.find(
+        const override = pricingConfig?.overrides?.find(
           (o) =>
             o.gameSlug === gameSlug &&
             o.itemSlug === item.itemSlug
         );
 
-        if (fixedOverride?.fixedPrice != null) {
-          finalPrice = Number(fixedOverride.fixedPrice);
-        } else if (pricingConfig?.slabs?.length) {
-          const slab = pricingConfig.slabs.find(
+        if (override?.fixedPrice != null) {
+          finalPrice = override.fixedPrice;
+        } else {
+          const slab = pricingConfig?.slabs?.find(
             (s) => basePrice >= s.min && basePrice < s.max
           );
           if (slab) {
@@ -310,8 +312,8 @@ export async function GET(req, { params }) {
       });
 
     return NextResponse.json(data);
-  } catch (error) {
-    console.error("Game Fetch Error:", error);
+  } catch (err) {
+    console.error("Game Fetch Error:", err);
     return NextResponse.json(
       { success: false, message: "Server Error" },
       { status: 500 }
