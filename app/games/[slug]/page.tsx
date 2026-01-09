@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 
 import Loader from "@/components/Loader/Loader";
 import MLBBPurchaseGuide from "@/components/HelpImage/MLBBPurchaseGuide";
@@ -16,6 +16,7 @@ import BuyPanelBgmi from "@/components/GameDetail/BuyPanelBgmi";
 export default function GameDetailPage() {
   const { slug } = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const sliderRef = useRef<HTMLDivElement | null>(null);
   const buyPanelRef = useRef<HTMLDivElement | null>(null);
@@ -24,6 +25,9 @@ export default function GameDetailPage() {
   const [activeItem, setActiveItem] = useState<any>(null);
   const [redirecting, setRedirecting] = useState(false);
   const [viewMode, setViewMode] = useState<"slider" | "grid">("grid");
+
+  /** ✅ detect weekly pass */
+  const isWeeklyPass = searchParams.get("type") === "weekly-pass";
 
   const isBGMI =
     game?.gameName?.toLowerCase() === "pubg mobile" ||
@@ -49,13 +53,14 @@ export default function GameDetailPage() {
           allItems: sortedItems,
         });
 
+        /** ✅ default active item */
         setActiveItem(sortedItems[0]);
       });
   }, [slug]);
 
-  /* ================= WEEKLY PASS OVERRIDE ================= */
+  /* ================= WEEKLY PASS AUTO-SELECT (NOT FILTER) ================= */
   useEffect(() => {
-    if (!game?.allItems) return;
+    if (!game?.allItems || !isWeeklyPass) return;
 
     const weeklyPass = game.allItems.find(
       (i: any) =>
@@ -66,7 +71,7 @@ export default function GameDetailPage() {
     if (weeklyPass) {
       setActiveItem(weeklyPass);
     }
-  }, [game]);
+  }, [game, isWeeklyPass]);
 
   if (!game || !activeItem) {
     return <Loader />;
@@ -75,13 +80,8 @@ export default function GameDetailPage() {
   /* ================= ITEMS ================= */
   const items = game.allItems;
 
-  const weeklyPassItem = items.find(
-    (i: any) =>
-      i.itemName === "Weekly Pass" &&
-      i.itemSlug === "weekly-pass816"
-  );
-
-  const visibleItems = weeklyPassItem ? [weeklyPassItem] : items;
+  /** ✅ SHOW ALL ITEMS ALWAYS */
+  const visibleItems = items;
 
   /* ================= HELPERS ================= */
   const calculateDiscount = (selling: number, dummy: number) => {
